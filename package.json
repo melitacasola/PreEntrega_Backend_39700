@@ -1,0 +1,15 @@
+{
+  "name": "desafio",
+  "version": "1.0.0",
+  "description": "desafio tercero",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Melissa Casola",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
