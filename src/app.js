@@ -2,7 +2,7 @@ import express from 'express';
 import { createRequire } from "module"
 
 const require = createRequire(import.meta.url)
-const json = require("../Products.json")
+const json = require("./Products.json")
 
 // const fileContents = fs.readFile('../Products.json', {encoding: 'utf-8'}, (err, result) =>{
 //     if(err) {
@@ -43,8 +43,6 @@ app.get('/products/:pid', (req, res) =>{
 //  }
 //  res.json(users.slice(0,limit));
 // })
-
-
 
 
 
