@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs'; 
 
 class ProductManager {
     #nextId = 0;
@@ -76,20 +76,8 @@ class ProductManager {
     }
 }
 
+// const manager = new ProductManager("./Products.json");
 
-async function main(){
-    const manager = new ProductManager("./Products.json");
-    // console.log( await manager.getProducts())
-
-    // await manager.addProduct('title', 'description', 1, 'thumbnail', 'code0', 1)
-    // await manager.addProduct('title2', 'description2', 2, 'thumbnail', 'code2', 2)
-    // await manager.addProduct('title3', 'description3', 3, 'thumbnail', 'code3', 3)
-    console.log( await manager.getProducts())
-
-    // console.log(await manager.getProductId(2))
-    await manager.deleteProduct(2)
-    console.log( await manager.getProducts()) // ES NECESARIO QE USE ESTE CONSOLE LOG?????
-    
-}
-
-main()
+// await manager.addProduct('title', 'description', 1, 'thumbnail', 'code0', 1)
+// console.log( await manager.getProducts())
+export default ProductManager;

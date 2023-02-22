@@ -1,37 +1,38 @@
 import express from 'express';
-import { createRequire } from "module"
-
-const require = createRequire(import.meta.url)
-const json = require("./Products.json")
-
-// const fileContents = fs.readFile('../Products.json', {encoding: 'utf-8'}, (err, result) =>{
-//     if(err) {
-//         throw err;
-//     }else{
-//         return result
-//     }
-// })
+import ProductManager from './product-manager.js';
 
 const app = express();
+const json = './Products.json';
+
 
 //TRAIGO TODOS LOS PRODUCTOS
-app.get('/products',(req,res)=>{
-    res.send(json)
+app.get('/products', async (req,res)=>{
+    const response = await new ProductManager(json).
+    getProducts()
+    const {limit} = req.query;
+    if(!limit){
+        res.send(response)
+     }
+     //envia el filtrado de el numero de datos
+    const filtered = response.splice(0,limit);
+    res.send(filtered);
+    
+
 })
 
 //busco por ID 
-app.get('/products/:pid', (req, res) =>{
+app.get('/products/:pid', async (req, res) =>{
 
-    const {pid} = req.params;
-
-    // const products = JSON.stringify(json)
-    const products = json.find((p) => p.id === pid)
-
-    if (!products){
-        return res.status(404).send({error: `No existe el ID ${pid}`})
+    try{
+        const {pid} = req.params;
+        const response = await new ProductManager(json).
+    getProductId(parseInt(pid))
+        
+        res.send(response)
+    } catch(err) {
+        res.status(404).send(`no exiiste${err}`)
     }
-        // res.send(products)
-        res.json(products)
+        
 })
 
 // app.get('/products', (req, res) =>{
