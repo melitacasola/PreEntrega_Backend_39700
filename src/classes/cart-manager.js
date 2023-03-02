@@ -67,39 +67,45 @@ class Carts{
     };
     async addProductToCart(cartId, productId) {
         try{
-            const carrito = await this.getAllCarts()
-
-            const existingProductIndex = carrito.findIndex(item => item.id === productId);
-            if (existingProductIndex !== -1) {
-                // Si el producto ya está en el carrito, aumentar la cantidad en uno
-                carrito[existingProductIndex].quantity += 1;
+            const carrito = await this.getCartId(cartId)
+            const existingProductIndex = carrito.products.filter(prod => prod.product == productId)
+            
+            if (existingProductIndex.length === 0) {
+                carrito.products.push({product: productId, quantity: 1})
+                
               } else {
-                // Si el producto no está en el carrito, agregarlo al carrito con una cantidad de uno
-                carrito.push({...productId, quantity: 1});
+                               
+                carrito.products = carrito.products.map(key => {
+                    if(key.product == productId){
+                        key.quantity +=1
+                    }
+                    return key
+                })
               }
               await fs.promises.writeFile(this.#path, JSON.stringify(this.carts))
+            return carrito
               
         }catch (error) {
             console.log (`ERROR adding product ${productId}. Msg: ${error}`)
         }        
     }
 
-    async updateCart(productId,cartId ){
-        try {
-            let oldCart = await this.getCartId(cartId)
+    // async updateCart(productId,cartId ){
+    //     try {
+    //         let oldCart = await this.getCartId(cartId)
 
-            oldCart = this.addProductToCart(productId, oldCart)
-            let carts = (await this.getAllCarts()).filter(item => item.id != cartId)
-            carts.push(oldCart)
-            await fs.promises.writeFile(this.#path, JSON.stringify(carts))
+    //         oldCart = this.addProductToCart(productId, oldCart)
+    //         let carts = (await this.getAllCarts()).filter(item => item.id != cartId)
+    //         carts.push(oldCart)
+    //         await fs.promises.writeFile(this.#path, JSON.stringify(carts))
 
-            return oldCart
-        }
-        catch (error) {
-            console.log (`ERROR updating cart ${cartId}. Msg: ${error}`)
-        }
+    //         return oldCart
+    //     }
+    //     catch (error) {
+    //         console.log (`ERROR updating cart ${cartId}. Msg: ${error}`)
+    //     }
 
-    }
+    // }
 
     
 }
