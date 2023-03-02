@@ -7,31 +7,40 @@ class ProductManager {
         this.#path = path;
     }
     
-    async addProduct (title, description, price, thumbnail, code, stock ) {
+    async addProduct (body ) {
         try {
             const consultProduct = await this.getProducts();
-            const checkCode = await consultProduct.find((p) => p.code === code)
-            if(!title || !description || !price || ! thumbnail || !code || !stock){
+            const checkCode = await consultProduct.find((p) => p.code === body.code)
+            
+            for( let i = 0; i < consultProduct.length; i++){
+                if(consultProduct[i].id > this.#id){
+                    this.#id = consultProduct[i].id
+                }
+            }
+            this.#id++
+
+            if(!body.title || !body.description || !body.price || !body.thumbnail || !body.code || !body.stock){
                 throw new Error(`todos los campos son obligatorios...`)
-            } else if (!checkCode){ 
-                const addProducts = {
+            } 
+            if (!checkCode){ 
+                let newProduct = {
                     id: this.#id,
-                    title, 
-                    description, 
-                    price, 
-                    thumbnail, 
-                    code, 
-                    stock,
+                    title: body.title, 
+                    description: body.description, 
+                    price: body.price, 
+                    thumbnail: body.thumbnail, 
+                    code: body.code, 
+                    stock: body.stock,
                 };
-                this.#id++
-                const addProduct = [...consultProduct, addProducts]
-                await fs.promises.writeFile(this.#path, JSON.stringify(addProduct))
+                consultProduct.push(newProduct)
+                await fs.promises.writeFile(this.#path, JSON.stringify(consultProduct))
+                return this.getProducts()
             }else{
-                console.log(`El codigo ${code} ya existe!`);
+                return `El codigo ${body.code} ya existe!`
             }
             
         } catch (error) {
-            return (`El codigo ${code} ya existe!`);
+            return (`El codigo ${body.code} ya existe!`);
         }
     }
 
@@ -65,14 +74,15 @@ class ProductManager {
         try {
             const products = await this.getProducts();
             
-            const index = products.find((elem) => elem.id === id);
+            const index = products.findIndex((elem) => elem.id === id);
             if (index === -1) {
                 return "Product to update not found";
           }
 
-          products[index] = Object.assign(products[index], newProps);
+          products[index] = {...products[index], ...newProps};
 
-          return await fs.promises.writeFile(this.#path, JSON.stringify(products));
+          await fs.promises.writeFile(this.#path, JSON.stringify(products));
+          return products
 
         } catch (e) {
             return { Error: e };
@@ -100,7 +110,7 @@ class ProductManager {
 // const manager = new ProductManager("./src/Products.json");
 // console.log( await manager.getProducts())
 
-// await manager.addProduct('Product 1', 'description 1', 1, 'thumbnail', 'code1', 1)
+// // await manager.addProduct('Product 1', 'description 1', 1, 'thumbnail', 'code1', 1)
 // await manager.addProduct('Product 2', 'description 2', 2, 'thumbnail', 'code2', 2)
 // await manager.addProduct('Product 3', 'description 3', 3, 'thumbnail', 'code3', 3)
 // await manager.addProduct('Product 4', 'description 4', 4, 'thumbnail', 'code4', 4)

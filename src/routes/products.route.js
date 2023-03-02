@@ -2,7 +2,7 @@ import { Router, urlencoded } from "express";
 import ProductManager from "../classes/product-manager.js";
 
 const routeProducts = Router();
-routeProducts.use(urlencoded({extended: true}))
+
 let fileProducts = './src/Products.json'
 
 let products = new ProductManager(`${fileProducts}`)
@@ -28,6 +28,7 @@ routeProducts.post('/', async(req, res) =>{
     try {
         const productAdd = await products.addProduct(req.body)
 
+        console.log(req.body)
         res.send(productAdd)
      } catch (error) {
         res.status(404).send(`error ${error}`)
@@ -38,7 +39,7 @@ routeProducts.put('/:pid', async (req,res) =>{
     try {
         const {pid} = req.params;
         const productChange = await products.updateProduct(parseInt(pid), req.body )
-
+        console.log(req.body)
         res.send(productChange)
         
     } catch (error) {
