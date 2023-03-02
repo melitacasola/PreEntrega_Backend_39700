@@ -19,18 +19,22 @@ class ProductManager {
             }
             this.#id++
 
-            if(!body.title || !body.description || !body.price || !body.thumbnail || !body.code || !body.stock){
+            if(!body.title || !body.description || !body.price || !body.thumbnails || !body.code || !body.stock){
                 throw new Error(`todos los campos son obligatorios...`)
             } 
+            if (typeof body.title !== "string" || typeof body.description !== "string" || typeof body.price !== "number" || typeof body.code !== "string" || typeof body.stock !== "number" ) {
+                throw new Error(`Invalid type`)
+            }
             if (!checkCode){ 
                 let newProduct = {
                     id: this.#id,
                     title: body.title, 
                     description: body.description, 
                     price: body.price, 
-                    thumbnail: body.thumbnail, 
+                    thumbnails: body.thumbnails || [ ],
                     code: body.code, 
                     stock: body.stock,
+                    status: body.status || true,
                 };
                 consultProduct.push(newProduct)
                 await fs.promises.writeFile(this.#path, JSON.stringify(consultProduct))
@@ -92,12 +96,15 @@ class ProductManager {
     async deleteProduct(productId) {
         try {
             const products = await this.getProducts();
+            
             const checkID = await products.find((p) => p.id === productId)
+
             if(checkID){
                 const deleteProd = await products.filter((p) => p.id !== productId)
                 await fs.promises.writeFile(this.#path, JSON.stringify(deleteProd))
+                return deleteProd
             } else{
-                console.log(`el producto ${productId} ya no existe`)
+                return `el producto ${productId} ya no existe`
             }
             
         } catch (error) {
@@ -106,20 +113,5 @@ class ProductManager {
         
     }
 }
-
-// const manager = new ProductManager("./src/Products.json");
-// console.log( await manager.getProducts())
-
-// // await manager.addProduct('Product 1', 'description 1', 1, 'thumbnail', 'code1', 1)
-// await manager.addProduct('Product 2', 'description 2', 2, 'thumbnail', 'code2', 2)
-// await manager.addProduct('Product 3', 'description 3', 3, 'thumbnail', 'code3', 3)
-// await manager.addProduct('Product 4', 'description 4', 4, 'thumbnail', 'code4', 4)
-// await manager.addProduct('Product 5', 'description 5', 5, 'thumbnail', 'code5', 5)
-// await manager.addProduct('Product 6', 'description 6', 6, 'thumbnail', 'code6', 6)
-// await manager.addProduct('Product 7', 'description 7', 7, 'thumbnail', 'code7', 7)
-// await manager.addProduct('Product 8', 'description 8', 8, 'thumbnail', 'code8', 8)
-// await manager.addProduct('Product 9', 'description 9', 9, 'thumbnail', 'code9', 9)
-// await manager.addProduct('Product 10', 'description 10', 10, 'thumbnail', 'code10',10)
-// console.log( await manager.getProducts())
 
 export default ProductManager;

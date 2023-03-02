@@ -15,6 +15,11 @@ routeCart.post('/', async(req,res) =>{
     res.send(newCart)
 });
 
+routeCart.get('/', async(req,res) =>{
+    const newCart = await cart.getAllCarts();
+    res.send(newCart)
+});
+
 routeCart.get('/:cid', async(req,res) =>{
     const getCart = await cart.getCartId(req.params.cid);
     res.send(getCart)
@@ -23,9 +28,9 @@ routeCart.get('/:cid', async(req,res) =>{
 routeCart.post('/:cid/product/:pid', async (req, res) =>{
     let validProduct = await product.getProductId(parseInt(req.params.pid))
 
-    if (validProduct.status == 'successful') {
-        const updateCart = await cart.updateCart(parseInt(req.params.cid), parseInt(req.params.pid))
-        res.send(updateCart.products)
+    if (validProduct) {
+        const updateCart = await cart.addProductToCart(parseInt(req.params.cid), parseInt(req.params.pid))
+        res.send(updateCart)
     }
     else {
         res.status(404).send(`Product with id ${req.params.pid} not found`)

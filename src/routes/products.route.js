@@ -39,7 +39,7 @@ routeProducts.put('/:pid', async (req,res) =>{
     try {
         const {pid} = req.params;
         const productChange = await products.updateProduct(parseInt(pid), req.body )
-        console.log(req.body)
+        
         res.send(productChange)
         
     } catch (error) {
@@ -51,6 +51,7 @@ routeProducts.delete('/:pid', async(req, res) =>{
     try {
         const {pid} = req.params;
         const deletProduct = await products.deleteProduct(parseInt(pid))
+        
         res.send(deletProduct)
     } catch (error) {
         res.status(404).send(`${error}`)
