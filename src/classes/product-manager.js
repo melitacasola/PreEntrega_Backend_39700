@@ -19,10 +19,10 @@ class ProductManager {
             }
             this.#id++
 
-            if(!body.title || !body.description || !body.price || !body.thumbnails || !body.code || !body.stock){
+            if(!body.title || !body.description || !body.price || !body.thumbnails || !body.code || !body.stock || !body.category){
                 throw new Error(`todos los campos son obligatorios...`)
             } 
-            if (typeof body.title !== "string" || typeof body.description !== "string" || typeof body.price !== "number" || typeof body.code !== "string" || typeof body.stock !== "number" ) {
+            if (typeof body.title !== "string" || typeof body.description !== "string" || typeof body.price !== "number" || typeof body.code !== "string" || typeof body.stock !== "number"|| typeof body.category !== "string" ) {
                 throw new Error(`Invalid type`)
             }
             if (!checkCode){ 
@@ -34,6 +34,7 @@ class ProductManager {
                     thumbnails: body.thumbnails || [ ],
                     code: body.code, 
                     stock: body.stock,
+                    category: body.category,
                     status: body.status || true,
                 };
                 consultProduct.push(newProduct)
@@ -63,13 +64,13 @@ class ProductManager {
             const products =  await this.getProducts();
             const productId = await products.find((p) => p.id === getprodId)
             
-            if(!productId){
-                throw new Error(`Evento con ID ${getprodId} no encontrado`)
-            } else{
+            if(productId){
                 return productId
+            } else{
+                return (`Evento con ID ${getprodId} no encontrado`)
             }
         } catch (error) {
-            return { Error: error };
+            return error;
         }
         
     }
@@ -102,7 +103,7 @@ class ProductManager {
             if(checkID){
                 const deleteProd = await products.filter((p) => p.id !== productId)
                 await fs.promises.writeFile(this.#path, JSON.stringify(deleteProd))
-                return deleteProd
+                return `Producto borrado con éxito`
             } else{
                 return `el producto ${productId} ya no existe`
             }

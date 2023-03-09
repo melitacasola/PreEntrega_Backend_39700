@@ -8,7 +8,20 @@ let fileProducts = './src/Products.json'
 let products = new ProductManager(`${fileProducts}`)
 
 routeProducts.get('/', async(req, res) =>{
-    res.send(await products.getProducts())
+    const prods = await products.getProducts()
+    try {
+        const { limit} = req.query;
+        if(! limit){
+            res.send(prods)
+        } else{
+            const filtered = prods.splice(0, limit);
+            res.send(filtered);
+        }
+
+    } catch (error) {
+        res.status(404).send(`Ops... algo malió sal${error}`)
+    }
+
 });
 
 routeProducts.get('/:pid', async (req, res) =>{
@@ -28,7 +41,6 @@ routeProducts.post('/', async(req, res) =>{
     try {
         const productAdd = await products.addProduct(req.body)
 
-        console.log(req.body)
         res.send(productAdd)
      } catch (error) {
         res.status(404).send(`error ${error}`)

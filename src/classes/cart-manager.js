@@ -1,38 +1,42 @@
 import fs from 'fs';
+import ProductManager from './product-manager.js';
 
-class Carts{
+const file = './src/Products.json'
+const productsManagers = new ProductManager(`${file}`)
+
+class Carts {
     #path;
     id = 0;
-    constructor(path){ 
+    constructor(path) {
         this.#path = path;
         this.carts = []
     }
 
     async getAllCarts() {
         try {
-            this.carts = await fs.promises.readFile(this.#path, {encoding: 'utf-8'});
-            if(this.carts.length == 0){
+            this.carts = await fs.promises.readFile(this.#path, { encoding: 'utf-8' });
+            if (this.carts.length == 0) {
                 this.carts = []
-            }else{
+            } else {
                 this.carts = JSON.parse(this.carts)
                 return this.carts
-            }        
+            }
         } catch (error) {
-            console.log (`ERROR getting all carts. Msg: ${error}`)
+            console.log(`ERROR getting all carts. Msg: ${error}`)
             return []
         }
     };
 
-    async createNewCart(){
+    async createNewCart() {
         try {
             let newCart = {
                 id: this.id,
                 products: []
             }
             this.carts = await this.getAllCarts();
-        
-            for( let i = 0; i < this.carts.length; i++){
-                if(this.carts[i].id > this.id){
+
+            for (let i = 0; i < this.carts.length; i++) {
+                if (this.carts[i].id > this.id) {
                     this.id = this.carts[i].id
                 }
             }
@@ -42,72 +46,60 @@ class Carts{
 
             await fs.promises.writeFile(this.#path, JSON.stringify(this.carts))
             return newCart
-            
+
         } catch (error) {
-            console.log (`ERROR creating cart. Msg: ${error}`)
-            return {error: `Cannot create cart. Msg: ${error}`}
+            console.log(`ERROR creating cart. Msg: ${error}`)
+            return { error: `Cannot create cart. Msg: ${error}` }
         }
     }
 
-    async getCartId(id){
-        try{
+    async getCartId(id) {
+        try {
             this.carts = await this.getAllCarts()
             let cartsById = this.carts.find(item => item.id == id)
             if (!cartsById) {
                 throw new Error(`ID ${id} not found`)
-            } else { 
+            } else {
                 return cartsById
             }
         }
         catch (error) {
-            console.log (`ERROR getting cart with id ${id}. Msg: ${error}`)
-            return {error: `Cannot get cart with id ${id}. ${error}`}
-            
+
+            return { error: `Cannot get cart with id ${id}. ${error}` }
+
         }
     };
     async addProductToCart(cartId, productId) {
-        try{
+        try {
             const carrito = await this.getCartId(cartId)
-            const existingProductIndex = carrito.products.filter(prod => prod.product == productId)
-            
-            if (existingProductIndex.length === 0) {
-                carrito.products.push({product: productId, quantity: 1})
-                
-              } else {
-                               
-                carrito.products = carrito.products.map(key => {
-                    if(key.product == productId){
-                        key.quantity +=1
-                    }
-                    return key
-                })
-              }
-              await fs.promises.writeFile(this.#path, JSON.stringify(this.carts))
-            return carrito
-              
-        }catch (error) {
-            console.log (`ERROR adding product ${productId}. Msg: ${error}`)
-        }        
+            const existProduct = await productsManagers.getProductId(productId)
+
+            console.log(existProduct)
+            if (typeof existProduct == 'string') {
+                throw new Error('ingrese producto valido')
+            } else {
+                const existingProductIndex = carrito.products.filter(prod => prod.product == existProduct.id)
+
+                if (existingProductIndex.length === 0) {
+                    carrito.products.push({ product: existProduct.id, quantity: 1 })
+                } else {
+                    carrito.products = carrito.products.map(key => {
+                        if (key.product == existProduct.id) {
+                            key.quantity += 1
+                        }
+                        return key
+                    })
+                }
+                await fs.promises.writeFile(this.#path, JSON.stringify(this.carts))
+
+                return carrito
+            }
+
+        } catch (error) {
+            throw new Error(`ERROR adding product ${productId}. Msg: ${error}`)
+        }
     }
 
-    // async updateCart(productId,cartId ){
-    //     try {
-    //         let oldCart = await this.getCartId(cartId)
-
-    //         oldCart = this.addProductToCart(productId, oldCart)
-    //         let carts = (await this.getAllCarts()).filter(item => item.id != cartId)
-    //         carts.push(oldCart)
-    //         await fs.promises.writeFile(this.#path, JSON.stringify(carts))
-
-    //         return oldCart
-    //     }
-    //     catch (error) {
-    //         console.log (`ERROR updating cart ${cartId}. Msg: ${error}`)
-    //     }
-
-    // }
-
-    
 }
 
 export default Carts;
