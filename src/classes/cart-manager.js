@@ -40,6 +40,7 @@ class Carts {
                     this.id = this.carts[i].id
                 }
             }
+            
             this.id++
             newCart.id = this.id
             this.carts.push(newCart)
@@ -74,7 +75,6 @@ class Carts {
             const carrito = await this.getCartId(cartId)
             const existProduct = await productsManagers.getProductId(productId)
 
-            console.log(existProduct)
             if (typeof existProduct == 'string') {
                 throw new Error('ingrese producto valido')
             } else {
