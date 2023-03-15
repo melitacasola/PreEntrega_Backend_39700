@@ -1,16 +1,8 @@
 <h1>Productos Tiempo Real:</h1>
 
-<ul id="containerProducts">
-    {{#each prods}}
-        <li>
-            <p><b>{{title}}</b></p>
-            <p>Precio: ${{price}}</p>
-            <p>Descripción: {{description}}</p>
-            <p>Stock: {{stock}}</p>
-            <p>Categoría: {{category}}</p>
-        </li>
-        {{/each}}
-</ul>
+ <div id="containerProducts">
+    <ul id="time-real"></ul>
+  </div>
 
 <script defer src="/socket.io/socket.io.js"></script>
 <script defer src="/js/index.js"></script>

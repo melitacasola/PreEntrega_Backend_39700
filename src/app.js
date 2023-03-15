@@ -24,16 +24,19 @@ app.use('/', routerViews)
 
 //arch static
 app.use(express.static(__dirname+'/public'))
-app.use((req, res, next) =>{
-    req.io = io;
-    next()
-})
+
 const httpServer = app.listen(8080,()=>console.log("Listening on 8080"));
 const socketServer = new Server(httpServer);
 
 socketServer.on('connection', (socket) =>{
-    console.log('nuevo cliente conectado')
-    socket.on('message', (data) =>{
+    console.log('new client connecting...');
+    socket.on('message' , (data) =>{
         console.log(data)
-    })
+    }) //recibe el index.js
+    socket.emit("message", "mensaje desde server2 - LLEGAL AL NAVEGADOR EN TIEMPO REAL"); //mando msj a la consola del navegador
+})
+
+app.use((req, res, next) =>{
+    req.io = io;
+    next()
 })
