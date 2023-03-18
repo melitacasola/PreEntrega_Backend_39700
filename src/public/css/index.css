@@ -1,0 +1,10 @@
+body {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    font: 1rem/1.5 "Montserrat", sans-serif;
+    overflow: hidden;
+    color: #FF5733;
+    background-color: #581845;
+  }

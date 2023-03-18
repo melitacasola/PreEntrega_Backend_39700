@@ -15,7 +15,7 @@ routerViews.get('/', async(req,res) =>{
 
 routerViews.get('/real-time-products', async(req, res) =>{
     const prods = await products.getProducts()
-    res.render('real_time_products', {prods})
+    res.render('real_time_products', {prods,  style: "index"})
 })
 
 export default routerViews;
