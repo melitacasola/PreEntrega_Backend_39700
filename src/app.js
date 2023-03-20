@@ -5,6 +5,11 @@ import routeProducts from './routes/products.route.js';
 import routeCart from './routes/carts.route.js';
 import routerViews from "./routes/views.routes.js";
 import { Server } from "socket.io";
+import ProductManager from "./classes/product-manager.js";
+
+//los productos
+
+const manager = new ProductManager('src/Products.json')
 
 //config
 const app = express();
@@ -28,20 +33,19 @@ app.use(express.static(__dirname+'/public'))
 const httpServer = app.listen(8080,()=>console.log("Listening on 8080"));
 const socketServer = new Server(httpServer);
 
-socketServer.on('connection', (socket) =>{
+socketServer.on('connection', async (socket) =>{
     console.log('new client connecting...');
-    
+
     socket.on('message' , (data) =>{
         console.log(data)
     }) //recibe el index.js
-
-    socket.emit("messages", {
-        id: 1,
-        text: 'soy mensaje aprendiendo'
-    }); //mando msj al navegador
+    
+    const products = await manager.getProducts()
+    socket.emit('products', products)//mando msj al navegador
 })
 
+
 app.use((req, res, next) =>{
-    req.io = io;
+    req.socketServer = socketServer;
     next()
 })

@@ -1,20 +1,32 @@
+
 const socket = io();
 
-socket.emit('message', 'anda desde ell indexJS!!!') //mando mensaje a la consola 
+// socket.emit('message', 'anda desde ell indexJS!!!') //mando mensaje a la consola 
 
 const timeReal = document.getElementById("containerProducts");
 
-socket.on('messages', (data) =>{console.log(data)})
+socket.on('products', (data) =>{
+  console.log(data);
+  render(data)
+})
 
-socket.on("message", async (routeProducts) => {
-    console.log(routeProducts)//recibo mensaje a la csl del navegador
-    let prodsList = "";
-  await routeProducts.forEach((e) => {
-    prodsList += `<ul>
+
+function render(data) {
+  let html = data.map(function(elem, index){
+    return `<div> <ul>
         
-            <li>Titulo:${e.title}, Id:${e.id}, Precio${e.price}, Stock:${e.stock}</li>
+    <li><strong>Titulo: ${elem.title}</strong> </li>
+    <li>ID: ${elem.id} </li>
+    <li>Precio: ${elem.price} </li>
+    <li>detalle: ${elem.description} </li>
+    <li>stock: ${elem.stock} </li>
     
-    </ul>`;
-  });
-  timeReal.innerHTML = prodsList; //ahora llega el mensaje al NAVEGADOR!!! 
-});
+    </ul> </div>`
+  }).join(" ")
+
+  timeReal.innerHTML = html; //ahora llega el mensaje al NAVEGADOR!!! 
+  };
+  
+    
+
+
