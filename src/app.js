@@ -6,6 +6,7 @@ import routeCart from './routes/carts.route.js';
 import routerViews from "./routes/views.routes.js";
 import { Server } from "socket.io";
 import ProductManager from "./classes/product-manager.js";
+import mongoose from 'mongoose';
 
 //los productos
 
@@ -29,6 +30,11 @@ app.use('/', routerViews)
 
 //arch static
 app.use(express.static(__dirname+'/public'))
+
+//mongoose
+mongoose.connect("mongodb+srv://melitacasola:mipass123456@cluster0.8cbjso7.mongodb.net/ecommerce?retryWrites=true&w=majority").then((conn) => {
+    console.log("Connected To DB!");
+  });
 
 const httpServer = app.listen(8080,()=>console.log("Listening on 8080"));
 const socketServer = new Server(httpServer);
