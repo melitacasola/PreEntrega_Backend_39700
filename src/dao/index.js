@@ -4,7 +4,7 @@ import DBProductManager from './db-managers/product.manager.js'
 import DBCartManager from './db-managers/cart.manager.js'
 
 const config = {
-    persistenceType: 'file'
+    persistenceType: 'db'
 };
 
 let ProductManager, CartManager

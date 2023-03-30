@@ -26,6 +26,10 @@ viewsRouter.get('/carts', async (req, res) =>{
     const cart = await cartManager.getAllCarts()
     // console.log(cart)
     res.render('carts', {cart, style: 'index'})
+});
+
+viewsRouter.get("/chat", async (req,res)=>{
+    res.render("chat")
 })
 
 export default viewsRouter;

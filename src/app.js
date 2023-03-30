@@ -7,6 +7,7 @@ import viewsRouter from "./routes/views.routes.js";
 import { Server } from "socket.io";
 import ProductManager from "./dao/file-managers/product.manager.js";
 import mongoose from 'mongoose';
+import chatModel from "./dao/models/chat.model.js";
 
 //los productos
 const manager = new ProductManager()
@@ -36,21 +37,33 @@ mongoose.connect("mongodb+srv://melitacasola:mipass123456@cluster0.8cbjso7.mongo
   });
 
 const httpServer = app.listen(8080,()=>console.log("Listening on 8080"));
-const socketServer = new Server(httpServer);
+const io = new Server(httpServer);
 
-socketServer.on('connection', async (socket) =>{
+io.on('connection', async (socket) =>{
     console.log('new client connecting...');
+
+    const chatMsg = await chatModel.findById("")
+    io.emit('set-msg', chatMsg.messages)
+
+    socket.on('chat-msg', async (data) =>{
+        const chat = await chatModel.findById("")
+        chat.messages.push(data)
+
+        await chat.save()
+
+        io.emit('set-msg', chat.messages)
+    })
 
     socket.on('message' , (data) =>{
         console.log(data)
     }) //recibe el index.js
     
     const products = await manager.getProducts()
-    socket.emit('products', products)//mando msj al navegador
+    io.emit('products', products)//mando msj al navegador
 })
 
 
 app.use((req, res, next) =>{
-    req.socketServer = socketServer;
+    req.io = io;
     next()
 })

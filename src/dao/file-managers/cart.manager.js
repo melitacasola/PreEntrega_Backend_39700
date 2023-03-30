@@ -7,7 +7,7 @@ const path = __dirname +'/dao/file-managers/files/carts.json';
 
 const productsManager = new ProductManager()
 
-class Carts {
+class CartsManager {
     id = 0;
     constructor() {
         this.carts = []
@@ -103,4 +103,4 @@ class Carts {
 
 }
 
-export default Carts;
+export default CartsManager;

@@ -1,9 +1,6 @@
 import productModel from "../models/product.model.js";
 
-// const path = __dirname +'/dao/file-managers/files/products.json';
-
 class ProductManager {
-    // #id = 0;
     constructor(){ 
        console.log('Probando desde DB ')
     }
@@ -43,29 +40,20 @@ class ProductManager {
         }
         
     }
-    // NUEVOS METODOS
-    // async updateProduct(id, newProps) {
-    //     try {
-    //         const products = await this.getProducts();
-            
-    //         const index = products.findIndex((elem) => elem.id === id);
-    //         if (index === -1) {
-    //             return "Product to update not found";
-    //       }
 
-    //       products[index] = {...products[index], ...newProps};
+    async updateProduct(id, update){
+        try {
+            const result = await productModel.findOneAndUpdate({_id: id}, update, {new: true})
 
-    //       await fs.promises.writeFile(path, JSON.stringify(products));
-    //       return products
-
-    //     } catch (e) {
-    //         return { Error: e };
-    //     }
-    // }
+            return result
+        } catch (error) {
+            return {Error: error}
+        }
+    }
     
     async deleteProduct(productId) {
         try {
-            const checkID = await productModel.deleteOne(productId)
+            const checkID = await productModel.deleteOne({_id: productId})
 
              return `Producto ${checkID}  borrado con éxito`
             

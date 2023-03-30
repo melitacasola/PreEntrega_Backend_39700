@@ -26,9 +26,9 @@ productsRouter.get('/:pid', async (req, res) =>{
     try{
         const {pid} = req.params;
         const response = await products.
-    getProductId(parseInt(pid))
+    getProductId(pid)
         
-        res.status(201).send({status: 'ok', payload: response})
+        res.send( response)
 
     } catch(err) {
         res.status(404).send(`no exiiste${err}`)
