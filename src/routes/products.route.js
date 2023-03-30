@@ -1,5 +1,5 @@
 import { Router, urlencoded } from "express";
-import ProductManager from "../dao/file-managers/product.manager.js";
+import {ProductManager} from "../dao/index.js";
 
 const productsRouter = Router();
 // const fileProducts = './src/dao/file-managers/files/Products.json'
@@ -45,8 +45,9 @@ productsRouter.post('/', async(req, res) =>{
         if (typeof title !== "string" || typeof description !== "string" || typeof price !== "number" || typeof code !== "string" || typeof stock !== "number"|| typeof category !== "string" ) {
             return res.status(400).send({status: 'error', payload:'Invalid type'})
         }
-        const productAdd = await products.addProduct({ title, description, price, thumbnails, code, stock, category })
-        res.send(productAdd)
+        const productAdd = await products.addProduct({title, description, price, thumbnails, code, stock, category});
+
+        res.status(201).send({status: 'ok', payload: productAdd})
         
      } catch (error) {
         res.status(404).send(`error ${error}`)

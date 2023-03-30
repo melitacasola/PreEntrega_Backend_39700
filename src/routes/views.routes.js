@@ -1,18 +1,20 @@
 import {json, Router} from 'express';
-import ProductManager from "../dao/file-managers/product.manager.js";
-// import { ProductManager, CartManager } from '../dao/index.js';
+// import ProductManager from "../dao/file-managers/product.manager.js";
+// import CartManager from "../dao/file-managers/cart.manager.js"
+import { ProductManager, CartManager } from '../dao/index.js';
 
 // let fileProducts = './src/Products.json'
-let products = new ProductManager()
+// let products = new ProductManager()
 
 const viewsRouter = Router();
 const productManager = new ProductManager();
-// const cartManager = new CartManager()
+const cartManager = new CartManager()
+
 viewsRouter.use(json())
 
 viewsRouter.get('/products', async(req,res) =>{
     const prods = await productManager.getProducts()
-    res.render('home', {prods, style: "index"})
+    res.render('products', {prods, style: "index"})
 })
 
 viewsRouter.get('/real-time-products', async(req, res) =>{
@@ -21,7 +23,9 @@ viewsRouter.get('/real-time-products', async(req, res) =>{
 })
 
 viewsRouter.get('/carts', async (req, res) =>{
-    //todo
+    const cart = await cartManager.getAllCarts()
+    // console.log(cart)
+    res.render('carts', {cart, style: 'index'})
 })
 
 export default viewsRouter;

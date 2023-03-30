@@ -1,17 +1,18 @@
-import FileProductManager from './file-manager/product.manager.js'
-// import DBProductManager from './db-managers/user.manager.js'
-import FileCartManager from './file-manager/cart.manager.js'
-// import DBCourseManager from './db-managers/course.manager.js'
+import FileProductManager from './file-managers/product.manager.js'
+import FileCartManager from './file-managers/cart.manager.js'
+import DBProductManager from './db-managers/product.manager.js'
+import DBCartManager from './db-managers/cart.manager.js'
 
 const config = {
-    persistenceType: 'db'
+    persistenceType: 'file'
 };
 
 let ProductManager, CartManager
 
 if (config.persistenceType === 'db'){
-    ProductManager = DBUserManager;
-    CourseManager = DBCourseManager;
+    ProductManager = DBProductManager;
+    CartManager = DBCartManager
+
 }else if(config.persistenceType === 'file'){
     ProductManager = FileProductManager;
     CartManager = FileCartManager

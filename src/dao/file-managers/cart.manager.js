@@ -1,20 +1,21 @@
 import fs from 'fs';
-import ProductManager from './product.manager.js';
+import __dirname from '../../utils.js';
+import ProductManager from './product.manager.js'
 
-const file = './src/Products.json'
-const productsManagers = new ProductManager(`${file}`)
+
+const path = __dirname +'/dao/file-managers/files/carts.json';
+
+const productsManager = new ProductManager()
 
 class Carts {
-    #path;
     id = 0;
-    constructor(path) {
-        this.#path = path;
+    constructor() {
         this.carts = []
     }
 
     async getAllCarts() {
         try {
-            this.carts = await fs.promises.readFile(this.#path, { encoding: 'utf-8' });
+            this.carts = await fs.promises.readFile(path, { encoding: 'utf-8' });
             if (this.carts.length == 0) {
                 this.carts = []
             } else {
@@ -45,7 +46,7 @@ class Carts {
             newCart.id = this.id
             this.carts.push(newCart)
 
-            await fs.promises.writeFile(this.#path, JSON.stringify(this.carts))
+            await fs.promises.writeFile(path, JSON.stringify(this.carts))
             return newCart
 
         } catch (error) {
@@ -73,7 +74,7 @@ class Carts {
     async addProductToCart(cartId, productId) {
         try {
             const carrito = await this.getCartId(cartId)
-            const existProduct = await productsManagers.getProductId(productId)
+            const existProduct = await productsManager.getProductId(productId)
 
             if (typeof existProduct == 'string') {
                 throw new Error('ingrese producto valido')
@@ -90,7 +91,7 @@ class Carts {
                         return key
                     })
                 }
-                await fs.promises.writeFile(this.#path, JSON.stringify(this.carts))
+                await fs.promises.writeFile(path, JSON.stringify(this.carts))
 
                 return carrito
             }
