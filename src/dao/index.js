@@ -1,6 +1,6 @@
-import FileProductManager from './file-manager/product-manager.js'
+import FileProductManager from './file-manager/product.manager.js'
 // import DBProductManager from './db-managers/user.manager.js'
-import FileCartManager from './file-manager/cart-manager.js'
+import FileCartManager from './file-manager/cart.manager.js'
 // import DBCourseManager from './db-managers/course.manager.js'
 
 const config = {

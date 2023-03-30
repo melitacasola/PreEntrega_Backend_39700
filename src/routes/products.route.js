@@ -1,13 +1,11 @@
 import { Router, urlencoded } from "express";
-import ProductManager from "../classes/product-manager.js";
+import ProductManager from "../dao/file-managers/product.manager.js";
 
-const routeProducts = Router();
+const productsRouter = Router();
+// const fileProducts = './src/dao/file-managers/files/Products.json'
+let products = new ProductManager();
 
-let fileProducts = './src/Products.json'
-
-let products = new ProductManager(`${fileProducts}`)
-
-routeProducts.get('/', async(req, res) =>{
+productsRouter.get('/', async(req, res) =>{
     const prods = await products.getProducts()
     try {
         const { limit} = req.query;
@@ -24,42 +22,50 @@ routeProducts.get('/', async(req, res) =>{
 
 });
 
-routeProducts.get('/:pid', async (req, res) =>{
+productsRouter.get('/:pid', async (req, res) =>{
     try{
         const {pid} = req.params;
         const response = await products.
     getProductId(parseInt(pid))
         
-        res.send(response)
+        res.status(201).send({status: 'ok', payload: response})
 
     } catch(err) {
         res.status(404).send(`no exiiste${err}`)
     }
 })
 
-routeProducts.post('/', async(req, res) =>{
+productsRouter.post('/', async(req, res) =>{
     try {
-        const productAdd = await products.addProduct(req.body)
+        const { title, description, price, thumbnails, code, stock, category } = req.body
 
+        if(!title || !description || !price || !code || !stock || !category){
+            return res.status(400).send({status: 'error', payload: 'Todos los campos son requeridos'})
+        } 
+        if (typeof title !== "string" || typeof description !== "string" || typeof price !== "number" || typeof code !== "string" || typeof stock !== "number"|| typeof category !== "string" ) {
+            return res.status(400).send({status: 'error', payload:'Invalid type'})
+        }
+        const productAdd = await products.addProduct({ title, description, price, thumbnails, code, stock, category })
         res.send(productAdd)
+        
      } catch (error) {
         res.status(404).send(`error ${error}`)
     }
 });
 
-routeProducts.put('/:pid', async (req,res) =>{
+productsRouter.put('/:pid', async (req,res) =>{
     try {
         const {pid} = req.params;
         const productChange = await products.updateProduct(parseInt(pid), req.body )
         
-        res.send(productChange)
+        res.status(201).send({status: 'ok', payload: productChange})
         
     } catch (error) {
         res.status(400).send(`${error}`)
     }
 })
 
-routeProducts.delete('/:pid', async(req, res) =>{
+productsRouter.delete('/:pid', async(req, res) =>{
     try {
         const {pid} = req.params;
         const deletProduct = await products.deleteProduct(parseInt(pid))
@@ -70,4 +76,4 @@ routeProducts.delete('/:pid', async(req, res) =>{
     }
 })
 
-export default routeProducts;
+export default productsRouter;

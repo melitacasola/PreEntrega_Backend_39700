@@ -1,16 +1,15 @@
 import express, {urlencoded, json} from "express";
 import handlebars from 'express-handlebars';
 import __dirname from './utils.js'
-import routeProducts from './routes/products.route.js';
-import routeCart from './routes/carts.route.js';
-import routerViews from "./routes/views.routes.js";
+import productsRouter from './routes/products.route.js';
+import cartsRouter from './routes/carts.route.js';
+import viewsRouter from "./routes/views.routes.js";
 import { Server } from "socket.io";
-import ProductManager from "./classes/product-manager.js";
+import ProductManager from "./dao/file-managers/product.manager.js";
 import mongoose from 'mongoose';
 
 //los productos
-
-const manager = new ProductManager('src/Products.json')
+const manager = new ProductManager()
 
 //config
 const app = express();
@@ -24,9 +23,9 @@ app.set('views', __dirname+'/views');
 
 
 //ROUTES
-app.use('/api/products', routeProducts)
-app.use('/api/carts', routeCart)
-app.use('/', routerViews)
+app.use('/api/products', productsRouter)
+app.use('/api/carts', cartsRouter)
+app.use('/', viewsRouter)
 
 //arch static
 app.use(express.static(__dirname+'/public'))

@@ -1,16 +1,16 @@
 import {Router} from 'express';
-import ProductManager from '../classes/product-manager.js';
-import Carts from '../classes/cart-manager.js';
+import ProductManager from '../dao/file-managers/product.manager.js';
+import Carts from '../dao/file-managers/cart.manager.js';
 
 
-const routeCart = Router();
+const cartsRouter = Router();
 
-let filePathCart = './src/carts.json'
+let filePathCart = './src/dao/file-managers/files/carts.json'
 let cart = new Carts(`${filePathCart}`)
 
-let product = new ProductManager('./src/Products.json');
+let product = new ProductManager();
 
-routeCart.post('/', async(req,res) =>{
+cartsRouter.post('/', async(req,res) =>{
     try {
         const newCart = await cart.createNewCart();
         res.send(newCart)
@@ -20,7 +20,7 @@ routeCart.post('/', async(req,res) =>{
     }
 });
 
-routeCart.get('/', async(req,res) =>{
+cartsRouter.get('/', async(req,res) =>{
     try {
         const newCart = await cart.getAllCarts();
         res.send(newCart)
@@ -29,7 +29,7 @@ routeCart.get('/', async(req,res) =>{
     }
 });
 
-routeCart.get('/:cid', async(req,res) =>{
+cartsRouter.get('/:cid', async(req,res) =>{
     try {
         const getCart = await cart.getCartId(req.params.cid);
         res.send(getCart)
@@ -39,7 +39,7 @@ routeCart.get('/:cid', async(req,res) =>{
     }
 })
 
-routeCart.post('/:cid/product/:pid', async (req, res) =>{
+cartsRouter.post('/:cid/product/:pid', async (req, res) =>{
     try {
         let validProduct = await product.getProductId(parseInt(req.params.pid))
     
@@ -57,4 +57,4 @@ routeCart.post('/:cid/product/:pid', async (req, res) =>{
 })
 
 
-export default routeCart;
+export default cartsRouter;

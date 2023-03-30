@@ -1,16 +1,18 @@
 import fs from 'fs'; 
+import __dirname from '../../utils.js'
+
+const path = __dirname +'/dao/file-managers/files/products.json';
 
 class ProductManager {
-    #path
     #id = 0;
-    constructor(path){ 
-        this.#path = path;
+    constructor(){ 
+       console.log('probando')
     }
     
-    async addProduct (body ) {
+    async addProduct ({ title, description, price, thumbnails, code, stock, category }) {
         try {
             const consultProduct = await this.getProducts();
-            const checkCode = await consultProduct.find((p) => p.code === body.code)
+            const checkCode = await consultProduct.find((p) => p.code === code)
             
             for( let i = 0; i < consultProduct.length; i++){
                 if(consultProduct[i].id > this.#id){
@@ -19,39 +21,33 @@ class ProductManager {
             }
             this.#id++
 
-            if(!body.title || !body.description || !body.price || !body.thumbnails || !body.code || !body.stock || !body.category){
-                throw new Error(`todos los campos son obligatorios...`)
-            } 
-            if (typeof body.title !== "string" || typeof body.description !== "string" || typeof body.price !== "number" || typeof body.code !== "string" || typeof body.stock !== "number"|| typeof body.category !== "string" ) {
-                throw new Error(`Invalid type`)
-            }
             if (!checkCode){ 
                 let newProduct = {
                     id: this.#id,
-                    title: body.title, 
-                    description: body.description, 
-                    price: body.price, 
-                    thumbnails: body.thumbnails || [ ],
-                    code: body.code, 
-                    stock: body.stock,
-                    category: body.category,
-                    status: body.status || true,
+                    title: title, 
+                    description: description, 
+                    price: price, 
+                    thumbnails: thumbnails || [ ],
+                    code:code, 
+                    stock: stock,
+                    category: category,
+                    
                 };
                 consultProduct.push(newProduct)
-                await fs.promises.writeFile(this.#path, JSON.stringify(consultProduct))
+                await fs.promises.writeFile(path, JSON.stringify(consultProduct))
                 return this.getProducts()
             }else{
-                return `El codigo ${body.code} ya existe!`
+                return `El codigo ${code} ya existe!`
             }
             
         } catch (error) {
-            return (`El codigo ${body.code} ya existe!`);
+            return (`El codigo ${code} ya existe!`);
         }
     }
 
     async getProducts (){
         try {
-            const products = await fs.promises.readFile(this.#path, {encoding: 'utf-8'})
+            const products = await fs.promises.readFile(path, {encoding: 'utf-8'})
             return JSON.parse(products)
 
         } catch (error) {
@@ -86,7 +82,7 @@ class ProductManager {
 
           products[index] = {...products[index], ...newProps};
 
-          await fs.promises.writeFile(this.#path, JSON.stringify(products));
+          await fs.promises.writeFile(path, JSON.stringify(products));
           return products
 
         } catch (e) {
@@ -102,7 +98,7 @@ class ProductManager {
 
             if(checkID){
                 const deleteProd = await products.filter((p) => p.id !== productId)
-                await fs.promises.writeFile(this.#path, JSON.stringify(deleteProd))
+                await fs.promises.writeFile(path, JSON.stringify(deleteProd))
                 return `Producto borrado con éxito`
             } else{
                 return `el producto ${productId} ya no existe`
