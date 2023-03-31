@@ -42,20 +42,34 @@ class CartsManager {
     async addProductToCart(cartId, productId) {
         try {
            const cart = await cartModel.findById(cartId);
+          
 
-           const product = cart.products.find((p) =>p._id === productId._id);
+           const product = cart.products.find((p) =>p.product === productId.product);
 
-           let updateProducts
-           if(product) {
+        //    const validProduct = product.
+            console.log(product)
+           if(product ) {
             product.quantity += 1
             await cart.save()
            } else{
-            cart.products.push({product: productId._id, quantity: 1 })
+            cart.products.push( {product: productId.product, _id: productId._id })
             await cart.save()
            };
 
         } catch (error) {
             throw new Error(`ERROR adding product ${productId}. Msg: ${error}`)
+        }
+    }
+    
+    deleteCart = async (cartId) => {
+        try {
+            const cart = await cartModel.findById(cartId);
+            const result = await cartModel.deleteOne(cart)
+            // console.log(checkID)
+             return `Producto ID: ${cart}  borrado con éxito`
+            
+        } catch (error) {
+            return {Error: error}
         }
     }
 

@@ -7,7 +7,7 @@ import viewsRouter from "./routes/views.routes.js";
 import { Server } from "socket.io";
 import ProductManager from "./dao/file-managers/product.manager.js";
 import mongoose from 'mongoose';
-import chatModel from "./dao/models/chat.model.js";
+import ChatModel from "./dao/models/chat.model.js";
 
 //los productos
 const manager = new ProductManager()
@@ -42,16 +42,18 @@ const io = new Server(httpServer);
 io.on('connection', async (socket) =>{
     console.log('new client connecting...');
 
-    const chatMsg = await chatModel.findById("")
-    io.emit('set-msg', chatMsg.messages)
+    socket.on('chat-message', (data) =>{
+        let messages = new ChatModel({ user: data.user, message: data.message })
+        messages.save(data);
+        io.emit('messages', messages)
+    })
 
-    socket.on('chat-msg', async (data) =>{
-        const chat = await chatModel.findById("")
-        chat.messages.push(data)
+    socket.on('new-user', (username) =>{
+        
+        socket.emit('messages', messages)
 
-        await chat.save()
-
-        io.emit('set-msg', chat.messages)
+        //emitimos msg a todos menos el qe se conecto. 
+        socket.broadcast.emit('new-user', username)
     })
 
     socket.on('message' , (data) =>{

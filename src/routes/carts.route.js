@@ -41,14 +41,15 @@ cartsRouter.get('/:cid', async(req,res) =>{
 
 cartsRouter.post('/:cid/product/:pid', async (req, res) =>{
     try {
-        let validProduct = await product.getProductId(parseInt(req.params.pid))
+        const {cid, pid} = req.params;
+        let validProduct = await product.getProductId(pid)
     
         if (validProduct) {
-            const updateCart = await cart.addProductToCart(parseInt(req.params.cid), parseInt(req.params.pid))
-            res.status(201).send({ status: 'ok', payload: updateCart})
+            const updateCart = await cart.addProductToCart(cid, validProduct)
+            res.status(201).send({ status: 'ok', payload: await cart.getCartId(cid)})
         }
         else {
-            res.status(404).send(`Product with id ${req.params.pid} not found`)
+            res.status(404).send(`Product with id ${pid} not found`)
         }
         
     } catch (error) {
@@ -56,11 +57,17 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) =>{
     }
 })
 
-// cartsRouter.post('/:cid/:pid', async (req, res) =>{
-//     const {cid , pid} = req.params;
+cartsRouter.delete('/:cid', async (req, res) =>{
+    try {
+        const {cid} = req.params;
 
-//     const result = await cartModel.
+        const result = await cart.deleteCart(cid)
+    
+        res.send(result)
+    } catch (error) {
+        res.status(400).send(`${error}`)
+    }
 
-// })
+})
 
 export default cartsRouter;

@@ -29,6 +29,7 @@ productsRouter.get('/:pid', async (req, res) =>{
     getProductId(pid)
         
         res.send( response)
+        console.log(response)
 
     } catch(err) {
         res.status(404).send(`no exiiste${err}`)
@@ -57,7 +58,7 @@ productsRouter.post('/', async(req, res) =>{
 productsRouter.put('/:pid', async (req,res) =>{
     try {
         const {pid} = req.params;
-        const productChange = await products.updateProduct(parseInt(pid), req.body )
+        const productChange = await products.updateProduct(pid, req.body )
         
         res.status(201).send({status: 'ok', payload: productChange})
         
@@ -69,7 +70,7 @@ productsRouter.put('/:pid', async (req,res) =>{
 productsRouter.delete('/:pid', async(req, res) =>{
     try {
         const {pid} = req.params;
-        const deletProduct = await products.deleteProduct(parseInt(pid))
+        const deletProduct = await products.deleteProduct(pid)
         
         res.send(deletProduct)
     } catch (error) {

@@ -1,13 +1,14 @@
-
-
-
-    <h1>Chat de la aplicación: </h1>
+<h1>Chat E-Commerce</h1>
+<div class="container">
     <div>
-        <input type="text" id="chat-input">
+        {{!-- aqui escribimos el mensaje  --}}
+        <input type="text" id="chat-input" />
     </div>
-    <div id="messages">    
+    <div>
+        {{!-- aqui veremos los msg qe vayan llegando --}}
+        <p id="messages-panel"></p>
     </div>
-
-<script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script defer src="/socket.io/socket.io.js"></script>
-<script defer src="/js/chat.js"></script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat.js"></script>

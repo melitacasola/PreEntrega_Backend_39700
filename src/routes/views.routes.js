@@ -29,7 +29,7 @@ viewsRouter.get('/carts', async (req, res) =>{
 });
 
 viewsRouter.get("/chat", async (req,res)=>{
-    res.render("chat")
+    res.render("chat", {style: "index"})
 })
 
 export default viewsRouter;

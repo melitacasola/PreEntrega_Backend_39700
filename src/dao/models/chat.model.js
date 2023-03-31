@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const chatSchema = new mongoose.Schema({
+
     messages: {
         type: [
             {
@@ -9,12 +10,14 @@ const chatSchema = new mongoose.Schema({
                 },
                 message: {
                     type: String
-                }
+                },
+                timestamp: { type: Date, default: Date.now }
             }
         ],
-        default: []
+        default: [],
+        
     }
 })
 
-const chatModel = mongoose.model("messages", chatSchema)
-export default chatModel
+const ChatModel = mongoose.model("messages", chatSchema)
+export default ChatModel

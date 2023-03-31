@@ -28,10 +28,12 @@ class ProductManager {
 
     getProductId = async(getprodId) => {
         try {
-            const productId =  await productModel.findOne(getprodId) ;
+            const productId =  await productModel.findById(getprodId) ;
 
             if(productId){
+                console.log(productId)
                 return productId
+                
             } else{
                 return (` ID ${getprodId} no found`)
             }
@@ -55,7 +57,7 @@ class ProductManager {
         try {
             const checkID = await productModel.deleteOne({_id: productId})
 
-             return `Producto ${checkID}  borrado con éxito`
+             return `Producto ID: ${productId}  borrado con éxito`
             
         } catch (error) {
             return {Error: error}
