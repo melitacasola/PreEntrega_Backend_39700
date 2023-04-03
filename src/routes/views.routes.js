@@ -2,6 +2,7 @@ import {json, Router} from 'express';
 // import ProductManager from "../dao/file-managers/product.manager.js";
 // import CartManager from "../dao/file-managers/cart.manager.js"
 import { ProductManager, CartManager } from '../dao/index.js';
+import ChatsManager from '../dao/db-managers/chat.manager.js';
 
 // let fileProducts = './src/Products.json'
 // let products = new ProductManager()
@@ -9,6 +10,7 @@ import { ProductManager, CartManager } from '../dao/index.js';
 const viewsRouter = Router();
 const productManager = new ProductManager();
 const cartManager = new CartManager()
+const chatManager = new ChatsManager()
 
 viewsRouter.use(json())
 
@@ -24,12 +26,13 @@ viewsRouter.get('/real-time-products', async(req, res) =>{
 
 viewsRouter.get('/carts', async (req, res) =>{
     const cart = await cartManager.getAllCarts()
-    // console.log(cart)
+
     res.render('carts', {cart, style: 'index'})
 });
 
 viewsRouter.get("/chat", async (req,res)=>{
-    res.render("chat", {style: "index"})
+    const message = await chatManager.getAll()
+    res.render("chat", {message, style: "index"});
 })
 
 export default viewsRouter;

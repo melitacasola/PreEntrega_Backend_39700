@@ -7,11 +7,11 @@ import viewsRouter from "./routes/views.routes.js";
 import { Server } from "socket.io";
 import ProductManager from "./dao/file-managers/product.manager.js";
 import mongoose from 'mongoose';
-import ChatModel from "./dao/models/chat.model.js";
+import chatRouter from "./routes/chat.route.js";
 
 //los productos
 const manager = new ProductManager()
-
+let messages = []
 //config
 const app = express();
 app.use(express.json())
@@ -26,6 +26,7 @@ app.set('views', __dirname+'/views');
 //ROUTES
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
+app.use('/api/chats', chatRouter)
 app.use('/', viewsRouter)
 
 //arch static
@@ -43,8 +44,9 @@ io.on('connection', async (socket) =>{
     console.log('new client connecting...');
 
     socket.on('chat-message', (data) =>{
-        let messages = new ChatModel({ user: data.user, message: data.message })
-        messages.save(data);
+        // let messages = new ChatModel({ user: data.user, message: data.message })
+        // messages.save(data);
+        messages.push(data)
         io.emit('messages', messages)
     })
 
