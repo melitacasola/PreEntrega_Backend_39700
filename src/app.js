@@ -9,6 +9,7 @@ import ProductManager from "./dao/file-managers/product.manager.js";
 import mongoose from 'mongoose';
 import chatRouter from "./routes/chat.route.js";
 
+
 //los productos
 const manager = new ProductManager()
 let messages = []

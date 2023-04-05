@@ -1,4 +1,8 @@
 import cartModel from '../models/cart.model.js'
+import productModel from '../models/product.model.js';
+import ProductManager from './product.manager.js';
+
+const products = new ProductManager()
 
 class CartsManager {
     constructor() {
@@ -31,8 +35,15 @@ class CartsManager {
 
     async getCartId(id) {
         try {
-            const cart = await cartModel.findById(id)
-            return cart
+            if(id){
+                const cart = await cartModel.find({ _id: `${id}`}).populate('products.product')
+                console.log(JSON.stringify(cart, null, '\t'))
+                return cart
+            } else{
+                const productInCart = await cartModel.find().lean()
+                return productInCart
+            }
+
         }
         catch (error) {
             return { error: `Cannot get cart with id ${id}. ${error}` }
