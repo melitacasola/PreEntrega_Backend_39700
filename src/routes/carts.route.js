@@ -1,5 +1,6 @@
 import {Router} from 'express';
-import {ProductManager, CartManager} from '../dao/index.js'
+import {ProductManager, CartManager} from '../dao/index.js';
+import {addProductToCard, removeProductFromCard} from '../controllers/cart.controller.js'
 // import cartModel from '../dao/models/cart.model.js';
 // import CartManager from '../dao/file-managers/cart.manager.js';
 
@@ -39,35 +40,10 @@ cartsRouter.get('/:cid', async(req,res) =>{
     }
 })
 
-cartsRouter.post('/:cid/product/:pid', async (req, res) =>{
-    try {
-        const {cid, pid} = req.params;
-        let validProduct = await product.getProductId(pid)
-    
-        if (validProduct) {
-            const updateCart = await cart.addProductToCart(cid, validProduct)
-            res.status(201).send({ status: 'ok', payload: await cart.getCartId(cid)})
-        }
-        else {
-            res.status(404).send(`Product with id ${pid} not found`)
-        }
-        
-    } catch (error) {
-        res.status(404).send(`${error}`)
-    }
-})
 
-cartsRouter.delete('/:cid', async (req, res) =>{
-    try {
-        const {cid} = req.params;
 
-        const result = await cart.deleteCart(cid)
-    
-        res.send(result)
-    } catch (error) {
-        res.status(400).send(`${error}`)
-    }
+cartsRouter.post("/:cid/product/:pid", addProductToCard);
 
-})
+cartsRouter.delete("/:cid/product/:pid", removeProductFromCard);
 
 export default cartsRouter;

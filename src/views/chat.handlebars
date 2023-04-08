@@ -2,12 +2,19 @@
 <div class="container">
     <div>
         {{!-- aqui escribimos el mensaje  --}}
-        <input type="text" id="chat-input" />
+        <input type="text" name="message" id="chat-input" placeholder="Message..." />
+
+        {{!-- <button type="submit">SEND</button> --}}
     </div>
     <div>
-        {{!-- aqui veremos los msg qe vayan llegando --}}
+        
         <p id="messages-panel"></p>
     </div>
+</div>
+<div>
+    {{#each messages}}
+  <p><strong>{{this.username}}:</strong> {{this.message}}</p>
+    {{/each}}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>

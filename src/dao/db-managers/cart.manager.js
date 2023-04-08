@@ -1,8 +1,4 @@
 import cartModel from '../models/cart.model.js'
-import productModel from '../models/product.model.js';
-import ProductManager from './product.manager.js';
-
-const products = new ProductManager()
 
 class CartsManager {
     constructor() {
@@ -24,63 +20,111 @@ class CartsManager {
             const cart = {
                 products: []
             }
-           const newCart = await cartModel.create(cart)
+            const newCart = await cartModel.create(cart)
             return newCart
 
         } catch (error) {
-            
+
             return { error: `Cannot create cart. Msg: ${error}` }
         }
     }
 
     async getCartId(id) {
         try {
-            if(id){
-                const cart = await cartModel.find({ _id: `${id}`}).populate('products.product')
-                console.log(JSON.stringify(cart, null, '\t'))
-                return cart
-            } else{
-                const productInCart = await cartModel.find().lean()
-                return productInCart
-            }
-
+            const cart = await cartModel.findById(id)
+            return cart
         }
         catch (error) {
             return { error: `Cannot get cart with id ${id}. ${error}` }
         }
     };
 
-    async addProductToCart(cartId, productId) {
+
+    //  add product to cart
+    async addProduct(cid, pid) {
         try {
-           const cart = await cartModel.findById(cartId);
-          
+            let cat = await cartModel.findById(cid);
+            
+            if (cat) {
+                const objEncontrado = cat.products.find(obj => obj._id.toString() === pid);
 
-           const product = cart.products.find((p) =>p.product === productId.product);
-
-        //    const validProduct = product.
-            console.log(product)
-           if(product ) {
-            product.quantity += 1
-            await cart.save()
-           } else{
-            cart.products.push( {product: productId.product, _id: productId._id })
-            await cart.save()
-           };
+                if (objEncontrado) {
+                    objEncontrado.quantity += 1
+                    await cat.save()
+                    return cat
+                } else {
+                    cat.products.push({ _id: pid })
+                    await cat.save()
+                    return cat
+                }
+            } else {
+                throw new Error('No se encontró el documento o el objeto');
+            }
 
         } catch (error) {
-            throw new Error(`ERROR adding product ${productId}. Msg: ${error}`)
+            throw new Error(error);
         }
-    }
-    
+    };
+
+    //elimina el carrito entero, deja de existir
     deleteCart = async (cartId) => {
         try {
             const cart = await cartModel.findById(cartId);
             const result = await cartModel.deleteOne(cart)
             // console.log(checkID)
-             return `Producto ID: ${cart}  borrado con éxito`
-            
+            return `Producto ID: ${cart}  borrado con éxito`
+
         } catch (error) {
-            return {Error: error}
+            return { Error: error }
+        }
+    }
+
+    // elimina un producto completo, del carrito, dejando los otros ok
+    deleteOneProdToCart = async (cartId, productId) =>{
+        try {
+           const deleteOneProduct = await cartModel.updateOne({_id: cartId}, {$pull: {products: { _id: productId}}})
+            console.log(deleteOneProduct)
+           return deleteOneProduct
+        } catch (error) {
+            throw new Error(`ERROR delete product ${productId}. Msg: ${error}`)
+        }
+    }
+
+
+
+    //vaciar carrito sin eliminar el carrito - CLEAN PRODUCTS (borra todos los productos)
+    cleanCart = async (cartId) => {
+        try {
+            const cleanToCart = await cartModel.updateOne({ _id: cartId }, { $pull: { products: {} } });
+
+            return cleanToCart;
+
+        } catch (error) {
+            throw new Error(`ERROR delete product ${cartId}. Msg: ${error}`)
+        }
+    };
+
+
+    //elimina de a 1 la cantidad de producto
+    async removeOneProduct(cid, pid) {
+        try {
+            let cat = await cartModel.findById(cid);
+            
+            if (cat) {
+                const objEncontrado = cat.products.find(obj => obj._id.toString() === pid);
+
+                if (objEncontrado) {
+                    objEncontrado.quantity -= 1
+                    await cat.save()
+                    return cat
+                }
+
+            } else {
+                throw new Error('No se encontró el documento o el objeto');
+            }
+
+        } catch (error) {
+            throw new Error(error);
         }
     }
 

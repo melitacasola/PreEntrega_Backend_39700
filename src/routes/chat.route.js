@@ -1,37 +1,24 @@
 import { Router, json } from "express";
 
-import ChatsManager from "../dao/db-managers/chat.manager.js";
+import {addToChat, getAllMsg} from '../controllers/chat.controller.js'
+
 
 const chatRouter  = Router ();
-const chatManager = new ChatsManager();
+
 // cartsRouter.use(json());
 
-chatRouter.get("/", async (req, res) => {
-    try {
-        const chats = await chatManager.getAll()
-        res.json(chats)
-    } catch (error) {
-        return `se producto un error: ${error}`
-    }
+
+chatRouter.get('/', function(req, res){
+try {
+    res.render("chat");
     
-});
+} catch (error) {
+    res.send({ status: "error", error: error.message });
+}
+  });
+  
+chatRouter.get("/messages",getAllMsg);
 
-chatRouter.post('/', async (req, res) =>{
-    const { user, message} = req.body;
-
-    try {
-        const newChat = await chatManager.addChat(user, message);
-        try {
-            const chats = await chatManager.getAll();
-            req.io.emit('chats', chats)
-           
-        } catch (error) {
-            return `${error} al obtener chat`
-        }
-        res.send(newChat)
-    } catch (error) {
-        return `se producto un error: ${error}`
-    }
-});
+chatRouter.post('/messages', addToChat);
 
 export default chatRouter; 

@@ -1,6 +1,6 @@
 const socket = io();
 
-let username;
+let user;
 
 Swal.fire({
     title: 'Identificate',
@@ -12,37 +12,56 @@ Swal.fire({
     },
     allowOutsideClick: false,
 }).then((res) => {
-    username = res.value;
-    socket.emit('new-user', username)
+    user = res.value;
+    socket.emit('new-user', user)
 })
 
+
 const chatInput = document.getElementById('chat-input');
+
 chatInput.addEventListener('keyup', (ev) => {
-  
+    //si la tecla es enter Y mayor a 0 el msg EMITIMOS elmensaje!! y limpiamos el input! 
     if (ev.key === 'Enter') {
         const inputMsg = chatInput.value;
 
         if (inputMsg.trim().length > 0) {
-            socket.emit('chat-message', { username, message: inputMsg });
+            // let body = JSON.stringify({user: user.value, message: inputMsg})
+            
+            socket.emit('chat-message', { user, message: inputMsg });
+            
             chatInput.value = "";
         }
     }
 })
 
 
-const msgChat = document.getElementById('messages-panel')
 
-socket.on('messages', (data) => {
+
+//recibimos la lsita actualizada de msg 
+const msgChat = document.getElementById('messages-panel')
+// socket.on('messages', async (data) => {
+    
+//     let messages = [];
+
+//     await data.forEach((element) => {
+//         messages += `<b> ${element.user}: </b> ${element.message} </br>`
+//     });
+//     msgChat.innerHTML = messages;
+// })
+socket.on("messages",async (data) => {
+    console.log(data);
     let messages = "";
-    data.forEach((element) => {
-        messages += `<b> ${element.username}: </b> ${element.message} </br>`
+  
+    await data.forEach((m) => {
+      messages += `<b>${m.user}:</b> ${m.message}</br>`;
     });
     msgChat.innerHTML = messages;
-})
+  })
 
-socket.on('new-user', (username) => {
+// modal "se unio nuevo usuario"
+socket.on('new-user', (user) => {
     Swal.fire({
-        title: `${username} se ha unido al chat `,
+        title: `${user} se ha unido al chat `,
         toast: true,
         position: "top-end"
     })

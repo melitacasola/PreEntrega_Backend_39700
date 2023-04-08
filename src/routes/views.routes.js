@@ -31,7 +31,7 @@ viewsRouter.get('/carts', async (req, res) =>{
 });
 
 viewsRouter.get("/chat", async (req,res)=>{
-    const message = await chatManager.getAll()
+    const message = await chatManager.getAll() //como de Real_Time_products esta variable no tiene nada qe ver- inclusive no recibe un arg en real-time-prods
     res.render("chat", {message, style: "index"});
 })
 
