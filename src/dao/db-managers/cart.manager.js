@@ -32,7 +32,7 @@ class CartsManager {
     async getCartId(id) {
         try {
             const cart = await cartModel.findById(id).populate('products.product').lean()
-            console.log(JSON.stringify(cart, null, '\t'))
+            console.log(await cartModel.findById(id).populate("products.product"))
             return cart
         }
         catch (error) {
@@ -44,14 +44,8 @@ class CartsManager {
     //  add product to cart
     async addProduct(cid, pid) {
         try {
-            let cart = await cartModel
-                .findById(cid)
-            //     .populate('products.product').lean();
-            // console.log(JSON.stringify(cat, null, '\t' ))
-
-            /**
-             * ACA AUMENTA OK EL QUANTITY PERO NO AGREGA COMO POPULATE
-             */
+            let cart = await cartModel.findById(cid)
+            
             if (cart) {
                 const objEncontrado = cart.products.find(obj => obj._id.toString() === pid);
 
@@ -60,7 +54,7 @@ class CartsManager {
                     await cart.save()
                     return cart
                 } else {
-                    cart.products.push({ _id: pid })
+                    cart.products({product: pid, quantity: 1})
                     await cart.save()
                     return cart
                 }
@@ -78,38 +72,60 @@ class CartsManager {
             let cart = await cartModel
                 .findById(cid)
                 .populate('products.product').lean();
-            console.log(JSON.stringify(cart, null, '\t'))
+            // console.log(JSON.stringify(cart, null, '\t'))
+
+            // const cart2 = await cartModel.findOne({ products: { $elemMatch: { id: cid } } }).exec();
+            // console.log(cart2)
 
             if (cart) {
-                const productFind = cart.products.find(obj => obj._id.toString() === pid);
-
-                console.log(productFind);
-
-                if (productFind) {
-                     const prodToCart = await cartModel.findByIdAndUpdate(
-                        { _id: cid, "products.product": pid },
-                        { $set: { products: { product: pid, quantity: +1 } } }
-                    );
+                     const prodToCart = await cartModel.updateOne(        
+                        { _id: cid,"products.product": pid },
+                        
+                        { $set: {"products.$.quantity": +1 } }
+                        );
+                    console.log(prodToCart)
                     return prodToCart
                 } else {
                     const prodToCart = await cartModel.findByIdAndUpdate(
                         { _id: cid, "products.product": pid },
                         { $push: { products: { product: pid, quantity: 1 } } }
                     );
+                    console.log(prodToCart)
+
                     return prodToCart
                 }
                 return productFind
                 // return await cart.save()
-            } else {
-                throw new Error('No se encontró el documento o el objeto');
-            }
+            // } else {
+            //     throw new Error('No se encontró el documento o el objeto');
+            // }
 
         } catch (error) {
             throw new Error(error);
         }
     };
 
-
+    async addProductToCart3(cartId, productId, quanty) {
+        try {
+          const findProduct = await cartModel
+            .findById(cartId)
+            .populate("products.product");
+    
+          const existingProductIndex = findProduct.products.findIndex(
+            (p) => p.product._id.toString() === productId
+          );
+          let quantyToAdd = quanty ? quanty : 1;
+          if (existingProductIndex !== -1) {
+            findProduct.products[existingProductIndex].quantity += Number(quantyToAdd);
+          } else {
+            findProduct.products.push({ product: productId, quantity: quantyToAdd });
+          }
+    
+          return await findProduct.save();
+        } catch (err) {
+          throw new Error(err);
+        }
+      }
     //elimina el carrito entero, deja de existir
     deleteCart = async (cartId) => {
         try {
@@ -182,22 +198,25 @@ class CartsManager {
     }
 
     //NO MODIFICA EL QUANTITY SINO PASO YO DEDE ACA LOS VALORES
-    updateQtyProduct = async (cid, pid) => {
+    updateQtyProduct = async (cid, pid, newQuantity) => {
         try {
-            let qty
-            const updateQty = await cartModel.findByIdAndUpdate(
-                { _id: cid, "products.product": pid },
-                { $set: { products: { product: pid, quantity: qty } } }
-            );
-            // { 'products.$.quantity': newQuantity }
-
-            return updateQty;
-
+        
+        const updateQty = await cartModel.updateOne(        
+        { _id: cid,"products.product": pid },
+        
+        { $set: {"products.$.quantity": newQuantity } }
+        );
+        console.log(newQuantity, cid, pid + '..manager')
+        console.log(updateQty)
+        return updateQty;
+        
         } catch (error) {
-            throw new Error(`ERROR update quantity ${cid} ${pid}. Msg: ${error}`)
-
+        
+        throw new Error(`ERROR update quantity ${cid} ${pid}. Msg: ${error}`)
+        
         }
-    }
+        
+        }
 }
 
 export default CartsManager;

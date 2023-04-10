@@ -42,7 +42,20 @@ cartsRouter.get('/:cid', async(req,res) =>{
 })
 
 //agrega un producto al carrito
-cartsRouter.post("/:cid/product/:pid", addProductToCard);
+cartsRouter.put("/:cid/product/:pid", async(req, res) =>{
+    try {
+        
+        const {cid, pid} = req.params
+
+        console.log(cid, pid)
+        let cartProd = await cart.addProduct(cid, pid)
+
+        console.log(cartProd)
+        res.send(cartProd)
+    } catch (error) {
+        console.log(error)
+    }
+});
 
 //elimina del carrito el producto seleccionado
 cartsRouter.delete('/:cid/products/:pid', removeProductFromCard);
@@ -54,7 +67,21 @@ cartsRouter.delete('/:cid', cleanToProducts )
 cartsRouter.put('/:cid', addArrayToCart)
 
 //actualiza SÓLO la cantidad de ejemplares del producto
-cartsRouter.put('/:cid/products/:pid', updateQtyToCart)
+cartsRouter.put("/:cId/products/:pId", async (req,res) =>{
+    try {
+        const cartId = req.params.cId;
+        const prodId = req.params.pId;
+        const prodQuanty = req.body.pQ;
+        const result = await cart.addProductToCart3(cartId, prodId, prodQuanty);
+        console.log(cartId)
+        console.log(prodQuanty)
+
+        res.send(result);
+    } catch (error) {
+        console.log(error)
+    }
+    
+})
 
 //cambió la ruta conforme al entregable
 // cartsRouter.delete("/:cid/product/:pid", removeProductFromCard);

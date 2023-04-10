@@ -1,15 +1,25 @@
 <div>
-    <h1>Products Manager</h1>
-    <ul>
-        {{#each prods}}
-        <li>
-            <p><b>{{title}}</b></p>
-            <p>Precio: ${{price}}</p>
-            <p>Descripción: {{description}}</p>
-            <p>Stock: {{stock}}</p>
-            <p>Categoría: {{category}}</p>
-        </li>
+  <h1>PRODUCTS MANAGER</h1>
 
-        {{/each}}
-    </ul>
+<div>
+    {{#each products.docs}}
+    <div>
+        <p>Product: {{this.title}} &nbsp; Price: {{this.price}}</p>
+        <p>description: {{this.description}} &nbsp; category: {{this.category}}</p>
+        <p>stock: {{this.stock}} &nbsp; thumbnails: {{this.thumbnails}}</p>
+    </div>
+    <button></button>
+    <br/>
+    {{/each}}
+</div>
+<br/>
+<div>
+    {{#if products.hasPrevPage}}
+        <a href='/products?page={{products.prevPage}}'><< Anterior</a>
+    {{/if}}
+   <span>Página {{products.page}} de {{products.totalPages}}</span>
+
+     {{#if products.hasNextPage}}
+        <a href="/products?page={{products.nextPage}}">Siguiente >></a>
+    {{/if}} 
 </div>
