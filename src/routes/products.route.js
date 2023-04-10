@@ -1,41 +1,22 @@
 import { Router, urlencoded } from "express";
 import {ProductManager} from "../dao/index.js";
 import productModel from "../dao/models/product.model.js";
+import buildQuery from "../controllers/product.controller.js";
 
 const productsRouter = Router();
 // const fileProducts = './src/dao/file-managers/files/Products.json'
 let products = new ProductManager();
 
-productsRouter.get('/', async(req, res) =>{
-    // const prods = await products.getProducts()
+productsRouter.get('/', async (req, res) => {
     try {
-        const limit = parseInt(req.query.limit) ||10;
-        const page = parseInt(req.query.page) || 1;
-        // const query = stock || {};
-        // const sort = parseInt(req.query.sort) || {price: 1 } || {price: -1}
-        // if(!page) page=1
-        const products = await productModel.paginate(
-            {},
-            {
-              limit,
-              page,
-              sort: {price: -1}
-            }
-        );
-        res.send(products)
-        res.render('products', {products})
-        // if(! limit){
-        //     res.send(prods)
-        // } else{
-        //     const filtered = prods.splice(0, limit);
-        //     res.send(filtered);
-        // }
-
-    } catch (error) {
-        res.status(404).send(`Ops... algo malió sal${error}`)
+        const products = await buildQuery(req);
+        res.json(products)
+        res.render('products', { products })
+    } catch (err) {
+        res.status(404).send(`Ops... algo malió sal${err}`)
     }
-
 });
+
 
 productsRouter.get('/:pid', async (req, res) =>{
     try{

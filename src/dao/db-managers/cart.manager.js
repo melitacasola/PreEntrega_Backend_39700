@@ -31,7 +31,7 @@ class CartsManager {
 
     async getCartId(id) {
         try {
-            const cart = await cartModel.findById(id)
+            const cart = await cartModel.findById(id).populate('products.product').lean()
             return cart
         }
         catch (error) {
@@ -44,22 +44,40 @@ class CartsManager {
     async addProduct(cid, pid) {
         try {
             let cat = await cartModel.findById(cid);
-            
-            if (cat) {
-                const objEncontrado = cat.products.find(obj => obj._id.toString() === pid);
+            console.log(cat)
+            if(!cat){
+                let qty
+                const updateQty = await cartModel.findByIdAndUpdate(
+                    { _id: cid, "products.product": pid },
+                    { $push: { products: { product: pid, quantity: qty } } }
+                    );
+                                // { 'products.$.quantity': newQuantity }
+                    console.log(updateQty)
+                return updateQty;
+            } else{
+                const updateQty = await cartModel.updateOne(
+                    {"products.product": pid},
+                    { $inc: { quantity: +1 }})
 
-                if (objEncontrado) {
-                    objEncontrado.quantity += 1
-                    await cat.save()
-                    return cat
-                } else {
-                    cat.products.push({ _id: pid })
-                    await cat.save()
-                    return cat
-                }
-            } else {
-                throw new Error('No se encontró el documento o el objeto');
+                    console.log(updateQty)
+                    return updateQty;
             }
+            
+            // if (cat) {
+            //     const objEncontrado = cat.products.find(obj => obj._id.toString() === pid);
+
+            //     if (objEncontrado) {
+            //         objEncontrado.quantity += 1
+            //         await cat.save()
+            //         return cat
+            //     } else {
+            //         cat.products.push({ _id: pid })
+            //         await cat.save()
+            //         return cat
+            //     }
+            // } else {
+            //     throw new Error('No se encontró el documento o el objeto');
+            // }
 
         } catch (error) {
             throw new Error(error);
@@ -90,8 +108,6 @@ class CartsManager {
         }
     }
 
-
-
     //vaciar carrito sin eliminar el carrito - CLEAN PRODUCTS (borra todos los productos)
     cleanCart = async (cartId) => {
         try {
@@ -104,7 +120,6 @@ class CartsManager {
         }
     };
 
-
     //elimina de a 1 la cantidad de producto
     async removeOneProduct(cid, pid) {
         try {
@@ -112,13 +127,11 @@ class CartsManager {
             
             if (cat) {
                 const objEncontrado = cat.products.find(obj => obj._id.toString() === pid);
-
                 if (objEncontrado) {
                     objEncontrado.quantity -= 1
                     await cat.save()
                     return cat
                 }
-
             } else {
                 throw new Error('No se encontró el documento o el objeto');
             }
@@ -128,6 +141,35 @@ class CartsManager {
         }
     }
 
+    async addProductsArray(cid, arr){
+        try {
+            if(!cid || !arr){
+                return 'missing items'
+            }
+            const addArray = await cartModel.updateOne({_id: cid}, {$push: {products: { $each: arr}}})
+             console.log(addArray)
+            return addArray
+         } catch (error) {
+             throw new Error(`ERROR update cart ${cid}. Msg: ${error}`)
+         }
+    }
+
+    updateQtyProduct = async(cid, pid) =>{
+        try {
+            let qty
+            const updateQty = await cartModel.findByIdAndUpdate(
+                { _id: cid, "products.product": pid },
+                { $set: { products: { product: pid, quantity: qty } } }
+                );
+                            // { 'products.$.quantity': newQuantity }
+
+            return updateQty;
+            
+        } catch (error) {
+            throw new Error(`ERROR update quantity ${cid} ${pid}. Msg: ${error}`)
+            
+        }
+    }
 }
 
 export default CartsManager;
