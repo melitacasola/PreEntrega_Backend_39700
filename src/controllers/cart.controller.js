@@ -10,7 +10,8 @@ const addProductToCard = async (req, res) => {
   const pid = req.params.pid;
 
   if (cid && pid) {
-    ret = await cartManager.addProduct(cid, pid);
+    ret = await cartManager.addProduct2(cid, pid);
+    return ret
   } else {
     res.status(400).send({ message: "Bad request" });
   }
