@@ -1,14 +1,12 @@
-import cartModel from '../models/cart.model.js'
+import cartModel from "../models/cart.model.js";
 
 class CartsManager {
-    constructor() {
-        console.log('working with CART using MongoDB...')
-    }
 
-    async getAllCarts() {
+    async getCart() {
         try {
             const carts = await cartModel.find().lean();
-            return carts
+            return JSON.stringify(carts, null, '\t')
+
         } catch (error) {
             console.log(`ERROR getting all carts. Msg: ${error}`)
             return []
@@ -17,14 +15,11 @@ class CartsManager {
 
     async createNewCart(cart) {
         try {
-            const cart = {
-                products: []
-            }
-            const newCart = await cartModel.create(cart)
-            return newCart
+            const newCart = new cartModel(cart)
+            await newCart.save()
+            return cart
 
         } catch (error) {
-
             return { error: `Cannot create cart. Msg: ${error}` }
         }
     }
@@ -42,25 +37,18 @@ class CartsManager {
 
 
     //  add product to cart
-    async addProduct(cid, pid) {
+    async addProduct(cid, pid, quantity) {
         try {
-            let cart = await cartModel.findById(cid)
-            
-            if (cart) {
-                const objEncontrado = cart.products.find(obj => obj._id.toString() === pid);
-
-                if (objEncontrado) {
-                    objEncontrado.quantity += 1
-                    await cart.save()
-                    return cart
-                } else {
-                    cart.products({product: pid, quantity: 1})
-                    await cart.save()
-                    return cart
-                }
+            const cart = await cartModel.findById(cid)
+            let objEncontrado = cart.products.find(obj => obj.product.toString() === pid.toString());
+            if (objEncontrado) {
+                objEncontrado.quantity = quantity
             } else {
-                throw new Error('No se encontró el documento o el objeto');
+                cart.products.push({ product: pid, quantity: quantity })
             }
+
+            const cartUpdate = await cartModel.updateOne({ _id: cid }, cart)
+            return cartUpdate
 
         } catch (error) {
             throw new Error(error);
@@ -78,24 +66,24 @@ class CartsManager {
             // console.log(cart2)
 
             if (cart) {
-                     const prodToCart = await cartModel.updateOne(        
-                        { _id: cid,"products.product": pid },
-                        
-                        { $set: {"products.$.quantity": +1 } }
-                        );
-                    console.log(prodToCart)
-                    return prodToCart
-                } else {
-                    const prodToCart = await cartModel.findByIdAndUpdate(
-                        { _id: cid, "products.product": pid },
-                        { $push: { products: { product: pid, quantity: 1 } } }
-                    );
-                    console.log(prodToCart)
+                const prodToCart = await cartModel.updateOne(
+                    { _id: cid, "products.product": pid },
 
-                    return prodToCart
-                }
-                return productFind
-                // return await cart.save()
+                    { $set: { "products.$.quantity": +1 } }
+                );
+                console.log(prodToCart)
+                return prodToCart
+            } else {
+                const prodToCart = await cartModel.findByIdAndUpdate(
+                    { _id: cid, "products.product": pid },
+                    { $push: { products: { product: pid, quantity: 1 } } }
+                );
+                console.log(prodToCart)
+
+                return prodToCart
+            }
+            return productFind
+            // return await cart.save()
             // } else {
             //     throw new Error('No se encontró el documento o el objeto');
             // }
@@ -105,36 +93,11 @@ class CartsManager {
         }
     };
 
-    async addProduct3(cartId, productId, quanty) {
-        try {
-          const findProduct = await cartModel
-            .findById(cartId)
-            .populate("products.product");
-    
-            console.log(findProduct)
-          const existingProductIndex = findProduct.products.findIndex(
-            (p) => p.product._id.toString() === productId
-          );
-
-          console.log(existingProductIndex)
-          let quantyToAdd = quanty ? quanty : 1;
-          if (existingProductIndex !== -1) {
-            findProduct.products[existingProductIndex].quantity += Number(quantyToAdd);
-          } else {
-            findProduct.products.push({ product: productId, quantity: quantyToAdd });
-          }
-    
-          return await findProduct.save();
-        } catch (err) {
-          throw new Error(err);
-        }
-      }
     //elimina el carrito entero, deja de existir
     deleteCart = async (cartId) => {
         try {
             const cart = await cartModel.findById(cartId);
             const result = await cartModel.deleteOne(cart)
-            // console.log(checkID)
             return `Producto ID: ${cart}  borrado con éxito`
 
         } catch (error) {
@@ -157,7 +120,6 @@ class CartsManager {
     cleanCart = async (cartId) => {
         try {
             const cleanToCart = await cartModel.updateOne({ _id: cartId }, { $pull: { products: {} } });
-
             return cleanToCart;
 
         } catch (error) {
@@ -165,26 +127,6 @@ class CartsManager {
         }
     };
 
-    //elimina de a 1 la cantidad de producto
-    async removeOneProduct(cid, pid) {
-        try {
-            let cat = await cartModel.findById(cid);
-
-            if (cat) {
-                const objEncontrado = cat.products.find(obj => obj._id.toString() === pid);
-                if (objEncontrado) {
-                    objEncontrado.quantity -= 1
-                    await cat.save()
-                    return cat
-                }
-            } else {
-                throw new Error('No se encontró el documento o el objeto');
-            }
-
-        } catch (error) {
-            throw new Error(error);
-        }
-    }
 
     //NO AGREGA EL ARRAY
     async addProductsArray(cid, arr) {
@@ -200,26 +142,6 @@ class CartsManager {
         }
     }
 
-    //NO MODIFICA EL QUANTITY SINO PASO YO DEDE ACA LOS VALORES
-    updateQtyProduct = async (cid, pid, newQuantity) => {
-        try {
-        
-        const updateQty = await cartModel.updateOne(        
-        { _id: cid,"products.product": pid },
-        
-        { $set: {"products.$.quantity": newQuantity } }
-        );
-        console.log(newQuantity, cid, pid + '..manager')
-        console.log(updateQty)
-        return updateQty;
-        
-        } catch (error) {
-        
-        throw new Error(`ERROR update quantity ${cid} ${pid}. Msg: ${error}`)
-        
-        }
-        
-        }
 }
 
 export default CartsManager;

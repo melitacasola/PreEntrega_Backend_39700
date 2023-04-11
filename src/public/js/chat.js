@@ -26,38 +26,39 @@ chatInput.addEventListener('keyup', (ev) => {
 
         if (inputMsg.trim().length > 0) {
             // let body = JSON.stringify({user: user.value, message: inputMsg})
-            
+
             socket.emit('chat-message', { user, message: inputMsg });
-            
+
             chatInput.value = "";
         }
     }
 })
 
-
-
-
 //recibimos la lsita actualizada de msg 
 const msgChat = document.getElementById('messages-panel')
-// socket.on('messages', async (data) => {
-    
-//     let messages = [];
 
-//     await data.forEach((element) => {
-//         messages += `<b> ${element.user}: </b> ${element.message} </br>`
-//     });
-//     msgChat.innerHTML = messages;
-// })
-socket.on("messages",async (data) => {
+socket.on("messages", (data) => {
     console.log(data);
-    let messages = "";
-  
-    await data.forEach((m) => {
-      messages += `<b>${m.user}:</b> ${m.message}</br>`;
+    // data = JSON.parse(data)
+    let messages = []
+
+    data.forEach((m) => {
+        messages += `<b>${m.user}:</b> ${m.message}</br>`;
     });
     msgChat.innerHTML = messages;
-  })
+})
 
+
+socket.on("chat-message", (newmsg) => {
+    console.log(newmsg);
+    // data = JSON.parse(data)
+    let messages = []
+
+    newmsg.forEach((m) => {
+        messages += `<b>${m.user}:</b> ${m.message}</br>`;
+    });
+    msgChat.innerHTML = messages;
+})
 // modal "se unio nuevo usuario"
 socket.on('new-user', (user) => {
     Swal.fire({

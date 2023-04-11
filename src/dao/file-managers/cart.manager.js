@@ -7,13 +7,13 @@ const path = __dirname +'/dao/file-managers/files/carts.json';
 
 const productsManager = new ProductManager()
 
-class CartsManager {
+class CartManager {
     id = 0;
     constructor() {
         this.carts = []
     }
 
-    async getAllCarts() {
+    async getAllCart() {
         try {
             this.carts = await fs.promises.readFile(path, { encoding: 'utf-8' });
             if (this.carts.length == 0) {
@@ -103,4 +103,4 @@ class CartsManager {
 
 }
 
-export default CartsManager;
+export default CartManager;

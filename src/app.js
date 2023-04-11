@@ -55,25 +55,28 @@ io.on('connection', async (socket) =>{
       console.log('Usuario desconectado');
     });
     
-    const chats = await messages.getAll()
+   //chat
+   const chats = await messages.getAll()
   
-    socket.on('chat-message', function(chats){
-      io.emit('chat-message', chats);
-    });
-    
-    socket.on('chat-message', async (chats) =>{
-     await messages.addChat(chats)
-     console.log(chats)
-      io.emit('messages', chats)
-    })
+   socket.on('chat-message', function(chats){
+     io.emit('chat-message', chats);
+   });
+   
+   socket.on('chat-message', async (chats) =>{
+    await messages.addChat(chats)
+    console.log(chats)
 
-    socket.on('new-user', (user) =>{
-      socket.emit('messages', chats) //ojo aca capaz va mensaje y no chats  
-      //emitimos msg a todos menos el qe se conecto. 
-      socket.broadcast.emit('new-user', user)
-      
-    })
-    
+    const newmsg =await messages.getAll()
+     io.sockets.emit('chat-message', newmsg)
+   })
+
+   socket.on('new-user', (user) =>{
+     socket.emit('messages', chats) //ojo aca capaz va mensaje y no chats  
+     //emitimos msg a todos menos el qe se conecto. 
+     socket.broadcast.emit('new-user', user)
+   })
+
+
     const products = await manager.getProducts()
     io.emit('products', products)//mando msj al navegador
 })

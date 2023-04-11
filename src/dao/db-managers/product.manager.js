@@ -1,66 +1,84 @@
 import productModel from "../models/product.model.js";
 
 class ProductManager {
-    constructor(){ 
-       console.log('Probando desde DB ')
-    }
-    
+
     addProduct = async (product) => {
         try {
-          const result = await productModel.create(product);
-          return result
-            
+            const result = new productModel(product);
+            await result.save()
+            return result
+
         } catch (error) {
             return (`all camps required`);
         }
     }
 
-   getProducts =  async () =>{
-        try {
-            const products = await productModel.find().lean()
+    getProducts = async (req) => {
+        const limit = parseInt(req.query.limit) || 10;
+        const page = parseInt(req.query.page) || 1;
+        const { sort, title, stock } = req.query;
 
-            return products
+        try {
+            let query = {}
+
+            if (title) {
+                query.title = { $regex: new RegExp(title), $options: "i" }
+            }
+            if (stock) {
+                query.stock = { $lte: stock }
+            }
+
+            let sortQuery = {};
+            if (sort === 'asc') {
+                sortQuery.price = 1;
+            } else if (sort === 'desc') {
+                sortQuery.price = -1;
+            }
+
+            return productModel.paginate(query, {
+                sort: sortQuery,
+                page,
+                limit,
+                lean: true
+            });
 
         } catch (error) {
-            return []
-        }  
+            throw error
+        }
     }
 
-    getProductId = async(getprodId) => {
+    getProductId = async (getprodId) => {
         try {
-            const productId =  await productModel.findById(getprodId) ;
-            if(productId){
+            const productId = await productModel.findById(getprodId);
+
+            if (productId) {
                 return productId
-                
-            } else{
+            } else {
                 return (` ID ${getprodId} no found`)
             }
         } catch (error) {
             return error;
         }
-        
     }
 
-    async updateProduct(id, update){
+    async updateProduct(id, update) {
         try {
-            const result = await productModel.findOneAndUpdate({_id: id}, update, {new: true})
-
+            const result = await productModel.findByIdAndUpdate(id, update)
             return result
+
         } catch (error) {
-            return {Error: error}
+            return { Error: error }
         }
     }
-    
+
     async deleteProduct(productId) {
         try {
-            const checkID = await productModel.deleteOne({_id: productId})
+            const deleteProd = await productModel.findByIdAndDelete(productId)
+            return `Producto ID: ${productId}  borrado con éxito`
 
-             return `Producto ID: ${productId}  borrado con éxito`
-            
         } catch (error) {
-            return {Error: error}
+            return { Error: error }
         }
-        
     }
 }
 

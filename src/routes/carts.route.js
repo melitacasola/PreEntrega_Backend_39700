@@ -1,33 +1,36 @@
 import {Router} from 'express';
-import {ProductManager, CartManager} from '../dao/index.js';
-import {addProductToCard, removeProductFromCard, cleanToProducts, addArrayToCart, updateQtyToCart} from '../controllers/cart.controller.js'
-import cartModel from '../dao/models/cart.model.js';
-// import CartManager from '../dao/file-managers/cart.manager.js';
+// import {ProductManager, CartManager} from '../dao/index.js';
+import CartsManager from '../dao/db-managers/cart.manager.js';
 
 const cartsRouter = Router();
-
-// let filePathCart = './src/dao/file-managers/files/carts.json'
-let cart = new CartManager()
-let product = new ProductManager();
+const cart = new CartsManager()
 
 //crear carrito
 cartsRouter.post('/', async(req,res) =>{
     try {
-        const newCart = await cart.createNewCart();
+        const newCart = await cart.createNewCart([]);
         res.status(201).send({status: 'ok',payload: newCart})
         
     } catch (error) {
-        res.status(404).send({status: 'error', payload: error})
+        res.status(500).json({
+            error: -1,
+            description: error.message,
+            status: 500
+        });
     }
 });
 
 //obtener todos los carritos
 cartsRouter.get('/', async(req,res) =>{
     try {
-        const newCart = await cart.getAllCarts();
-        res.send(newCart)
+        const allCart = await cart.getCart();
+        res.send(allCart)
     } catch (error) {
-        res.status(404).send(`${error}`)
+        res.status(500).json({
+            error: -1,
+            description: error.message,
+            status: 500
+        });
     }
 });
 
@@ -40,50 +43,72 @@ cartsRouter.get('/:cid', async(req,res) =>{
         res.status(201).send(getCart)
         
     } catch (error) {
-        res.status(404).send(`${error}`)
+        res.status(500).json({
+            error: -1,
+            description: error.message,
+            status: 500
+        });
     }
 })
 
 //agrega un producto al carrito
-cartsRouter.put("/:cid/product/:pid", async(req, res) =>{
+cartsRouter.put("/:cid/products/:pid", async(req, res) =>{
+    const cartId = req.params.cid;
+    const prodId = req.params.pid;
+    const {quantity} = req.body
     try {
-            const cartId = req.params.cid;
-            const prodId = req.params.pid;
-            const prodQuanty = req.body.pQ;
-
-            const result = await cart.addProductToCart3(cartId, prodId, prodQuanty);
+            const result = await cart.addProduct(cartId, prodId, quantity);
             res.send(result);
         }
         catch (error) {
-        console.log(error)
+            res.status(500).json({
+                error: -1,
+                description: error.message,
+                status: 500
+            });
+        }
+});
+
+
+//elimina del carrito el producto seleccionado
+cartsRouter.delete('/:cid/products/:pid', async(req, res) =>{
+    const {cid} = req.params;
+    const {pid} = req.params;
+
+    try {
+        const result = await cart.deleteOneProdToCart(cid, pid)
+        res.send({
+            message: 'Product deleted successfully',
+            id: pid
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            error: -1,
+            description: error.message,
+            status: 500
+        });
     }
 });
 
-//elimina del carrito el producto seleccionado
-cartsRouter.delete('/:cid/products/:pid', removeProductFromCard);
-
 //elimina todos los productos del carrito
-cartsRouter.delete('/:cid', cleanToProducts )
-
-//actualiza el carrito con un arreglo de productos
-cartsRouter.put('/:cid', addArrayToCart)
-
-//actualiza SÓLO la cantidad de ejemplares del producto
-cartsRouter.put("/:cId/products/:pId", async (req,res) =>{
+cartsRouter.delete('/:cid', async(req, res) =>{
+    const {cid} = req.params
     try {
-        const cartId = req.params.cId;
-        const prodId = req.params.pId;
-        const prodQuanty = req.body.pQ;
-        const result = await cart.addProductToCart3(cartId, prodId, prodQuanty);
-        console.log(cartId)
-        console.log(prodQuanty)
-
-        res.send(result);
+        const result = await cart.cleanCart(cid)
+        res.send({
+            message: 'Cart deleted successfully',
+            id: cid
+        })
     } catch (error) {
-        console.log(error)
+        res.status(500).json({
+            error: -1,
+            description: error.message,
+            status: 500
+        });
     }
-    
-})
+} );
+
 
 //cambió la ruta conforme al entregable
 // cartsRouter.delete("/:cid/product/:pid", removeProductFromCard);

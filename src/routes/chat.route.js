@@ -5,9 +5,6 @@ import {addToChat, getAllMsg} from '../controllers/chat.controller.js'
 
 const chatRouter  = Router ();
 
-// cartsRouter.use(json());
-
-
 chatRouter.get('/', function(req, res){
 try {
     res.render("chat");
