@@ -10,6 +10,7 @@ const cartsRouter = Router();
 let cart = new CartManager()
 let product = new ProductManager();
 
+//crear carrito
 cartsRouter.post('/', async(req,res) =>{
     try {
         const newCart = await cart.createNewCart();
@@ -20,6 +21,7 @@ cartsRouter.post('/', async(req,res) =>{
     }
 });
 
+//obtener todos los carritos
 cartsRouter.get('/', async(req,res) =>{
     try {
         const newCart = await cart.getAllCarts();
@@ -29,6 +31,7 @@ cartsRouter.get('/', async(req,res) =>{
     }
 });
 
+//obtener un carrito
 cartsRouter.get('/:cid', async(req,res) =>{
     try {
         const {cid} = req.params
@@ -44,15 +47,14 @@ cartsRouter.get('/:cid', async(req,res) =>{
 //agrega un producto al carrito
 cartsRouter.put("/:cid/product/:pid", async(req, res) =>{
     try {
-        
-        const {cid, pid} = req.params
+            const cartId = req.params.cid;
+            const prodId = req.params.pid;
+            const prodQuanty = req.body.pQ;
 
-        console.log(cid, pid)
-        let cartProd = await cart.addProduct(cid, pid)
-
-        console.log(cartProd)
-        res.send(cartProd)
-    } catch (error) {
+            const result = await cart.addProductToCart3(cartId, prodId, prodQuanty);
+            res.send(result);
+        }
+        catch (error) {
         console.log(error)
     }
 });

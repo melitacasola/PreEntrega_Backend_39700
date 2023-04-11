@@ -1,4 +1,3 @@
-
 const socket = io();
 
 // socket.emit('message', 'anda desde ell indexJS!!!') //mando mensaje a la consola 

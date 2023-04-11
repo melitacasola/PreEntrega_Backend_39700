@@ -1,0 +1,11 @@
+<div>
+    <h1> Product Details </h1>
+
+    <div>
+        {{#if productId.docs}}
+            <p>Product: {{this.title}} &nbsp; Price: {{this.price}}</p>
+        <p>description: {{this.description}} &nbsp; category: {{this.category}}</p>
+        <p>stock: {{this.stock}} &nbsp; thumbnails: {{this.thumbnails}}</p>
+        {{/if}}
+    </div>
+</div>

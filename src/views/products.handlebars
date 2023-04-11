@@ -7,19 +7,27 @@
         <p>Product: {{this.title}} &nbsp; Price: {{this.price}}</p>
         <p>description: {{this.description}} &nbsp; category: {{this.category}}</p>
         <p>stock: {{this.stock}} &nbsp; thumbnails: {{this.thumbnails}}</p>
+        
+
+        <a href="http://localhost:8080/products/productId/?pid{{this._id}}" style="text-decoration: none; color: yellow"><small>Id Product: {{this._id}}</small></a>
     </div>
-    <button></button>
+    <form
+          method="put"
+          action="/api/cart/64345a653d7444ecd1012cba/product/{{id}}"
+        >
+          <button type="submit" style="border: black; margin: 15px; border-radius: 5px; background-color: coral;">Add to cart</button>
+        </form>
     <br/>
     {{/each}}
 </div>
 <br/>
 <div>
     {{#if products.hasPrevPage}}
-        <a href='/products?page={{products.prevPage}}'><< Anterior</a>
+        <a href='/products?page={{products.prevPage}}' style="text-decoration: none; color: yellow"><< Anterior</a>
     {{/if}}
    <span>Página {{products.page}} de {{products.totalPages}}</span>
 
      {{#if products.hasNextPage}}
-        <a href="/products?page={{products.nextPage}}">Siguiente >></a>
+        <a href="/products?page={{products.nextPage}}" style="text-decoration: none; color: yellow">Siguiente >></a>
     {{/if}} 
 </div>

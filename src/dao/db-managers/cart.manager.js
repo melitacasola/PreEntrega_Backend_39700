@@ -32,7 +32,7 @@ class CartsManager {
     async getCartId(id) {
         try {
             const cart = await cartModel.findById(id).populate('products.product').lean()
-            console.log(await cartModel.findById(id).populate("products.product"))
+            // console.log(await cartModel.findById(id).populate("products.product"))
             return cart
         }
         catch (error) {
@@ -105,15 +105,18 @@ class CartsManager {
         }
     };
 
-    async addProductToCart3(cartId, productId, quanty) {
+    async addProduct3(cartId, productId, quanty) {
         try {
           const findProduct = await cartModel
             .findById(cartId)
             .populate("products.product");
     
+            console.log(findProduct)
           const existingProductIndex = findProduct.products.findIndex(
             (p) => p.product._id.toString() === productId
           );
+
+          console.log(existingProductIndex)
           let quantyToAdd = quanty ? quanty : 1;
           if (existingProductIndex !== -1) {
             findProduct.products[existingProductIndex].quantity += Number(quantyToAdd);
