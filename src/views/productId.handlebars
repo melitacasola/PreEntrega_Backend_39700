@@ -1,11 +1,48 @@
-<div>
-    <h1> Product Details </h1>
-
+<h1> Product Details </h1>
     <div>
-        {{#if productId.docs}}
-            <p>Product: {{this.title}} &nbsp; Price: {{this.price}}</p>
-        <p>description: {{this.description}} &nbsp; category: {{this.category}}</p>
-        <p>stock: {{this.stock}} &nbsp; thumbnails: {{this.thumbnails}}</p>
-        {{/if}}
+        {{#each productId}}
+        <h2>{{this.title}}</h2>
+        <p>description: {{this.description}}</p>
+        <p>Price: {{this.price}}</p>
+        <p>Stock: {{this.stock}}</p>
+        <p>Category: {{this.category}}</p>
+        <p>thumbnails: {{this.thumbnails}}</p>
+        
+        <form method="put" action="http://localhost:8080/api/carts/6434e76c42cb87bff0ca125e/products/{{this._id}}">
+        <button type="submit">Add to cart</button>
+        </form>
+
+        <form action="http://localhost:8080/api/carts/6435dfa37fe2b45403bb5ebf/products/{{this._id}}" method="PUT">
+            <input type="hidden" name="{{this._id}}" value="{{this._id}}">
+            <label for="quantity">Cantidad:</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" required>
+            <button id="buttonAdd">Agregar al carrito</button>
+        </form>
+
+        
+        {{/each}}
     </div>
-</div>
+
+    <script>
+
+        const buttonAdd = document.getElementById('buttonAdd');
+
+        buttonAdd.addEventListener('click', () => {
+            fetch(`http://localhost:8080/api/carts/6435dfa37fe2b45403bb5ebf/products/${pid}`, {
+                method: 'PUT',
+                headers:{
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    pid: pid,
+                    //cid: cartId,
+                    quantity: quantity
+                })
+                
+            })
+            .then(response = response.json())
+            .then(data => console.log(data))
+            .catch(err => console.log(err))
+        })
+
+    </script>

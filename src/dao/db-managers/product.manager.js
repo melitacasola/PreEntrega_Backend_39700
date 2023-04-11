@@ -13,7 +13,7 @@ class ProductManager {
         }
     }
 
-    getProducts = async (req) => {
+    getProducts = async (queryList) => {
         const limit = parseInt(req.query.limit) || 10;
         const page = parseInt(req.query.page) || 1;
         const { sort, title, stock } = req.query;

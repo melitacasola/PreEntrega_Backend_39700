@@ -1,13 +1,18 @@
 <div>
     <h1>Carts Manager</h1>
-    <ul>
-        {{#each cart.docs}}
-        <li>
-            <p><b>{{this.id }}</b></p>
-            <p>Products: {{  this.products}}</p>
-    
-        </li>
 
+<div>
+        {{#each carts.docs}}
+    
+            <p>ID: <b>{{this._id }}</b></p>
+            {{#each products}}
+            <li>product: {{product}}</li>
+
+            <ul>Quantity: {{quantity}}</ul>
+            {{/each}}
+    
+        
         {{/each}}
-    </ul>
+    </div>
+  <p>probando each en carts</p>
 </div>

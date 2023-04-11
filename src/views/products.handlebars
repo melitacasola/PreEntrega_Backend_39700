@@ -4,23 +4,22 @@
 <div>
     {{#each products.docs}}
     <div>
-        <p>Product: {{this.title}} &nbsp; Price: {{this.price}}</p>
-        <p>description: {{this.description}} &nbsp; category: {{this.category}}</p>
-        <p>stock: {{this.stock}} &nbsp; thumbnails: {{this.thumbnails}}</p>
-        
+       <h2>{{this.title}}</h2>
+        <p>Description: {{this.description}}</p>
+        <p>Price: {{this.price}}</p>
+        <p>Stock{{this.Stock}}</p>
 
-        <a href="http://localhost:8080/products/productId/?pid{{this._id}}" style="text-decoration: none; color: yellow"><small>Id Product: {{this._id}}</small></a>
+        <a href="http://localhost:8080/products/{{this._id}}" style="text-decoration: none; color: yellow"> Details of Products </a>
     </div>
-    <form
-          method="put"
-          action="/api/cart/64345a653d7444ecd1012cba/product/{{id}}"
-        >
-          <button type="submit" style="border: black; margin: 15px; border-radius: 5px; background-color: coral;">Add to cart</button>
-        </form>
+    
     <br/>
     {{/each}}
 </div>
+
 <br/>
+
+<a href="http://localhost:8080/carts/{{cid}}" style="text-decoration: none; color: yellow"> <button>ir al carrito</button> </a>
+
 <div>
     {{#if products.hasPrevPage}}
         <a href='/products?page={{products.prevPage}}' style="text-decoration: none; color: yellow"><< Anterior</a>
