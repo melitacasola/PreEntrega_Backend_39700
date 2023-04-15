@@ -1,6 +1,11 @@
 <div>
   <h1>PRODUCTS MANAGER</h1>
 
+  <h1>Bienvenido, ....</h1>
+ <form method="post" action="/api/sessions/logout">
+        <button type="submit">logOut</button>
+    </form>
+
 <div>
     {{#each products.docs}}
     <div>
@@ -30,3 +35,11 @@
         <a href="/products?page={{products.nextPage}}" style="text-decoration: none; color: yellow">Siguiente >></a>
     {{/if}} 
 </div>
+
+    <script>
+      function logout() {
+        fetch('/logout', { method: 'POST' })
+          .then(() => window.location.href = '/login')
+          .catch(console.error);
+      }
+    </script>

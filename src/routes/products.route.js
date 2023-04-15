@@ -1,6 +1,6 @@
 import { Router } from "express";
 // import {ProductManager} from "../dao/index.js";
-
+// import isAuthenticated from "../middleware/auth.middleware.js";
 import ProductManager from "../dao/db-managers/product.manager.js";
 
 
@@ -61,7 +61,7 @@ productsRouter.put('/:pid', async (req,res) =>{
     // const product = req.body;
 
     try {
-        const productChange = await productManger.updateProduct(pid, req.body )
+        const productChange = await productManger.updateProduct(pid, req.body)
         
         res.status(201).send({status: 'ok', payload: productChange})
         

@@ -1,91 +1,106 @@
-import express, {urlencoded, json} from "express";
-import __dirname from './utils.js'
+import express, { urlencoded, json } from "express";
 import handlebars from 'express-handlebars';
+import { Server } from "socket.io";
+import mongoose from 'mongoose';
+import session from 'express-session'
+import MongoStore from 'connect-mongo'
+import cookieParser from "cookie-parser";
+
+import __dirname from './utils.js'
 import productsRouter from './routes/products.route.js';
 import cartsRouter from './routes/carts.route.js';
 import viewsRouter from "./routes/views.routes.js";
-import { Server } from "socket.io";
 import ProductManager from "./dao/file-managers/product.manager.js";
-import mongoose from 'mongoose';
-
-//CHATTT ya venis
+import { AuthRouter } from './routes/auth.route.js';
 import chatRouter from "./routes/chat.route.js";
 import ChatsManager from "./dao/db-managers/chat.manager.js";
 
 
-//los productos
-const manager = new ProductManager()
-const messages = new ChatsManager()
+//constantes
+const manager = new ProductManager();
+const messages = new ChatsManager();
+const dataBase = "mongodb+srv://melitacasola:mipass123456@cluster0.8cbjso7.mongodb.net/ecommerce?retryWrites=true&w=majority"
 
 //config
 const app = express();
 app.use(express.json())
-app.use(urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 //handlebars
 app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
-app.set('views', __dirname+'/views');
+app.set('views', __dirname + '/views');
 
 
 //ROUTES
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/api/chats', chatRouter)
-app.use('/', viewsRouter)
+app.use('/api/sessions', AuthRouter)
+app.use(viewsRouter)
 
 //arch static
-app.use(express.static(__dirname+'/public'))
+app.use(express.static(__dirname + '/public'))
 
 //mongoose
-mongoose.connect("mongodb+srv://melitacasola:mipass123456@cluster0.8cbjso7.mongodb.net/ecommerce?retryWrites=true&w=majority").then((conn) => {
-    console.log("Connected To DB!");
-  });
+mongoose.connect(dataBase)
 
-const httpServer = app.listen(8080,()=>console.log("Listening on 8080"));
+app.use(
+  session({
+    store: MongoStore.create({
+      mongoUrl: dataBase
+    }),
+    secret: 'my-secret',
+    saveUninitialized: true,
+    resave: true
+  })
+)
+
+const httpServer = app.listen(8080, () => console.log("Listening on 8080"));
 
 
 //WebSocket
 const io = new Server(httpServer);
 
-io.on('connection', async (socket) =>{
-    console.log('new client connecting...');
-    
-    socket.on('disconnect', function(){
-      console.log('Usuario desconectado');
-    });
-    
-   //chat
-   const chats = await messages.getAll()
-  
-   socket.on('chat-message', function(chats){
-     io.emit('chat-message', chats);
-   });
-   
-   socket.on('chat-message', async (chats) =>{
+io.on('connection', async (socket) => {
+  console.log('new client connecting...');
+
+  socket.on('disconnect', function () {
+    console.log('Usuario desconectado');
+  });
+
+  //chat
+  const chats = await messages.getAll()
+
+  socket.on('chat-message', function (chats) {
+    io.emit('chat-message', chats);
+  });
+
+  socket.on('chat-message', async (chats) => {
     await messages.addChat(chats)
     console.log(chats)
 
-    const newmsg =await messages.getAll()
-     io.sockets.emit('chat-message', newmsg)
-   })
+    const newmsg = await messages.getAll()
+    io.sockets.emit('chat-message', newmsg)
+  })
 
-   socket.on('new-user', (user) =>{
-     socket.emit('messages', chats) //ojo aca capaz va mensaje y no chats  
-     //emitimos msg a todos menos el qe se conecto. 
-     socket.broadcast.emit('new-user', user)
-   })
+  socket.on('new-user', (user) => {
+    socket.emit('messages', chats) //ojo aca capaz va mensaje y no chats  
+    //emitimos msg a todos menos el qe se conecto. 
+    socket.broadcast.emit('new-user', user)
+  })
 
 
-    const products = await manager.getProducts()
-    io.emit('products', products)//mando msj al navegador
+  const products = await manager.getProducts()
+  io.emit('products', products)//mando msj al navegador
 })
-  
 
-app.use((req, res, next) =>{
-    req.io = io;
-    next()
+
+app.use((req, res, next) => {
+  req.io = io;
+  next()
 });
 
 
-export {io}
+export { io }

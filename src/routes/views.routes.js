@@ -9,7 +9,6 @@ import cartModel from '../dao/models/cart.model.js';
 
 const viewsRouter = Router();
 const productManager = new ProductManager();
-
 const chatManager = new ChatsManager()
 
 viewsRouter.use(json())
@@ -19,10 +18,9 @@ viewsRouter.use(json())
 //     res.render('real_time_products', { style: "index" })
 // })
 
-
 viewsRouter.get("/products", async (req, res) => {
-    const { page, limit } = req.query
-
+    const { page, limit } = req.query;
+    
     const products = await productModel.paginate(
         {},
         {
@@ -67,6 +65,22 @@ viewsRouter.get("/chat", async (req, res) => {
     res.render("chat", { message, style: "index" });
 })
 
+// routes vistas
+
+viewsRouter.get('/', (req, res) =>{
+    res.render('home', {style: 'index'})
+})
+
+//vistas loggin
+viewsRouter.get('/login', (req, res) =>{
+    res.render('login', { style: 'index'})
+})
+
+viewsRouter.get('/signup', (req, res) =>{
+    res
+        .render('signup', { style: 'index'})
+
+})
 
 
 export default viewsRouter;

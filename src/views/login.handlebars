@@ -1,0 +1,30 @@
+
+<h2>Login</h2>
+<span>🤫 You can log in using the username: <strong>user</strong> , and the password: <strong>pass</strong></span>
+<div>
+
+    <form action="/api/sessions/login" method="POST"> 
+        <div>
+            <div>
+                <span  id="basic-addon1">Usuario</span>
+                <input type="text" name="username" required class="form-control" placeholder="Usuario" aria-label="Usuario" aria-describedby="basic-addon1">
+            </div>
+        </div>
+
+        <div >
+            <div >
+                <span >Contraseña</span>
+                <input type="password" name="pass" required class="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon1">
+            </div>
+        </div>
+
+        <div >
+            <div >
+                <button type="submit">Log in</button>
+            </div>
+        </div>
+
+
+
+    </form>
+</div>
