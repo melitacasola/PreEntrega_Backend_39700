@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const userCollection = 'users'
 
 const userSchema = new mongoose.Schema({
-    username: String,
+    user: String,
     pass: String,
     rol: String
 });

@@ -1,10 +1,13 @@
 <div>
   <h1>PRODUCTS MANAGER</h1>
 
-  <h1>Bienvenido, ....</h1>
- <form method="post" action="/api/sessions/logout">
-        <button type="submit">logOut</button>
-    </form>
+  <h1>Bienvenid@, {{usuario}} </h1>
+  <div class="container">
+      <form method="post" action="/api/sessions/logout">
+          <button type="submit">logOut</button>
+      </form>
+
+  </div>
 
 <div>
     {{#each products.docs}}

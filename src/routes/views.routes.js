@@ -4,7 +4,7 @@ import ProductManager from '../dao/db-managers/product.manager.js'
 import ChatsManager from '../dao/db-managers/chat.manager.js';
 import productModel from '../dao/models/product.model.js';
 import cartModel from '../dao/models/cart.model.js';
-
+import {authMiddleware} from '../middleware/auth.middleware.js'
 
 
 const viewsRouter = Router();
@@ -18,8 +18,9 @@ viewsRouter.use(json())
 //     res.render('real_time_products', { style: "index" })
 // })
 
-viewsRouter.get("/products", async (req, res) => {
+viewsRouter.get("/products", authMiddleware, async (req, res) => {
     const { page, limit } = req.query;
+    const usuario = req.session.user
     
     const products = await productModel.paginate(
         {},
@@ -30,7 +31,7 @@ viewsRouter.get("/products", async (req, res) => {
         }
     )
 
-    res.render("products", { products, style: 'index' });
+    res.render("products", { usuario, products, style: 'index' });
 });
 
 viewsRouter.get('/products/:pid', async (req, res)=>{
@@ -68,7 +69,8 @@ viewsRouter.get("/chat", async (req, res) => {
 // routes vistas
 
 viewsRouter.get('/', (req, res) =>{
-    res.render('home', {style: 'index'})
+    const usuario = req.session.user
+    res.render('home', {usuario, style: 'index'})
 })
 
 //vistas loggin
