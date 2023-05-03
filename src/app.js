@@ -105,7 +105,7 @@ io.on('connection', async (socket) =>{
     io.emit('products', products)//mando msj al navegador
 })
   
-
+//necesario para getProducts
 app.use((req, res, next) =>{
     req.io = io;
     next()

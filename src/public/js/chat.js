@@ -34,7 +34,7 @@ chatInput.addEventListener('keyup', (ev) => {
     }
 })
 
-//recibimos la lsita actualizada de msg 
+//recibimos la lista actualizada de msg 
 const msgChat = document.getElementById('messages-panel')
 
 socket.on("messages", (data) => {
@@ -59,6 +59,7 @@ socket.on("chat-message", (newmsg) => {
     });
     msgChat.innerHTML = messages;
 })
+
 // modal "se unio nuevo usuario"
 socket.on('new-user', (user) => {
     Swal.fire({

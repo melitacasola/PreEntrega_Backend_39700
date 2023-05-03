@@ -13,36 +13,12 @@ class ProductManager {
         }
     }
 
-    getProducts = async (queryList) => {
-        const limit = parseInt(req.query.limit) || 10;
-        const page = parseInt(req.query.page) || 1;
-        const { sort, title, stock } = req.query;
+    getProducts = async () => {
+        try{
+            const product = await productModel.find();
+            return product
 
-        try {
-            let query = {}
-
-            if (title) {
-                query.title = { $regex: new RegExp(title), $options: "i" }
-            }
-            if (stock) {
-                query.stock = { $lte: stock }
-            }
-
-            let sortQuery = {};
-            if (sort === 'asc') {
-                sortQuery.price = 1;
-            } else if (sort === 'desc') {
-                sortQuery.price = -1;
-            }
-
-            return productModel.paginate(query, {
-                sort: sortQuery,
-                page,
-                limit,
-                lean: true
-            });
-
-        } catch (error) {
+        }catch (error) {
             throw error
         }
     }
@@ -80,6 +56,14 @@ class ProductManager {
             return { Error: error }
         }
     }
+    async getPaginateProducts(query={},options={}){
+        try {
+            const result = await productModel.paginate(query,options);
+            return result;
+        } catch (error) {
+            throw new Error(`Error get all ${error}`);
+        }
+    };
 }
 
 export default ProductManager;
