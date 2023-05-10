@@ -37,7 +37,7 @@ class CartsManager {
 
 
     //  add product to cart
-    async addProduct(cid, pid, quantity) {
+    async updateQuantityToProd(cid, pid, quantity) {
         try {
             const cart = await cartModel.findById(cid)
             let objEncontrado = cart.products.find(obj => obj.product.toString() === pid.toString());
@@ -55,23 +55,21 @@ class CartsManager {
         }
     };
 
-    async addProduct2(cid, pid) {
+    async addProduct(cid, pid) {
         try {
             let cart = await cartModel
                 .findById(cid)
                 .populate('products.product').lean();
-            // console.log(JSON.stringify(cart, null, '\t'))
-
-            // const cart2 = await cartModel.findOne({ products: { $elemMatch: { id: cid } } }).exec();
-            // console.log(cart2)
 
             if (cart) {
-                const prodToCart = await cartModel.updateOne(
+                const prodToCart = await cartModel.findByIdAndUpdate(
                     { _id: cid, "products.product": pid },
 
                     { $set: { "products.$.quantity": +1 } }
                 );
+
                 console.log(prodToCart)
+                
                 return prodToCart
             } else {
                 const prodToCart = await cartModel.findByIdAndUpdate(
@@ -82,11 +80,7 @@ class CartsManager {
 
                 return prodToCart
             }
-            return productFind
-            // return await cart.save()
-            // } else {
-            //     throw new Error('No se encontró el documento o el objeto');
-            // }
+
 
         } catch (error) {
             throw new Error(error);

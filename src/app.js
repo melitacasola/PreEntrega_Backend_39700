@@ -4,16 +4,17 @@ import { Server } from "socket.io";
 import mongoose from 'mongoose';
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
+import passport from "passport";
 
 import __dirname from './utils.js'
-import productsRouter from './routes/products.route.js';
-import cartsRouter from './routes/carts.route.js';
+import productsRouter from './routes/products.routes.js';
+import cartsRouter from './routes/carts.routes.js';
 import viewsRouter from "./routes/views.routes.js";
 import ProductManager from "./dao/file-managers/product.manager.js";
-import { AuthRouter } from "./routes/auth.route.js";
-import chatRouter from "./routes/chat.route.js";
+import { AuthRouter } from "./routes/auth.routes.js";
+import chatRouter from "./routes/chat.routes.js";
 import ChatsManager from "./dao/db-managers/chat.manager.js";
-
+import { initializePassport } from "./config/passport.config.js";
 
 //constantes
 const app = express();
@@ -33,6 +34,12 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }))
+
+//config passport dsps de la session
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session())
+
 
 //handlebars
 app.engine('handlebars', handlebars.engine());

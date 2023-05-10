@@ -7,7 +7,7 @@ import { checkValidProductFields } from "../middleware/vadilate.middleware.js"
 
 const productsRouter = Router();
 
-const productManger = new ProductManager()
+const productmanager = new ProductManager()
 
 productsRouter.get('/', async (req, res) => {
     try {
@@ -33,7 +33,7 @@ productsRouter.get('/', async (req, res) => {
             }
         };
 
-        const result = await productManger.getPaginateProducts(
+        const result = await productmanager.getPaginateProducts(
             query,
             {
                 page,
@@ -66,7 +66,7 @@ productsRouter.get('/', async (req, res) => {
 productsRouter.get('/:pid', async (req, res) => {
     try {
         const { pid } = req.params;
-        const response = await productManger.
+        const response = await productmanager.
             getProductId(pid)
 
         res.send(response)
@@ -84,7 +84,7 @@ productsRouter.post('/', checkValidProductFields, async (req, res) => {
         body.price = Number(body.price);
         body.stock = Number(body.stock);
         console.log("body: ", body);
-        const productAdded = await productManger.addProduct(body);
+        const productAdded = await productmanager.addProduct(body);
         res.send({ status: "success", result: productAdded, message: "product added" });
     } catch (error) {
         res.status(404).send(`error ${error}`)
@@ -96,7 +96,7 @@ productsRouter.put('/:pid', async (req, res) => {
     // const product = req.body;
 
     try {
-        const productChange = await productManger.updateProduct(pid, req.body)
+        const productChange = await productmanager.updateProduct(pid, req.body)
 
         res.status(201).send({ status: 'ok', payload: productChange })
 
@@ -108,7 +108,7 @@ productsRouter.put('/:pid', async (req, res) => {
 productsRouter.delete('/:pid', async (req, res) => {
     const { pid } = req.params;
     try {
-        const deletProduct = await productManger.deleteProduct(pid)
+        const deletProduct = await productmanager.deleteProduct(pid)
 
         res.send(deletProduct)
     } catch (error) {

@@ -1,18 +1,24 @@
 <div>
     <h1>Carts Manager</h1>
 
-<div>
-        {{#each carts.docs}}
-    
-            <p>ID: <b>{{this._id }}</b></p>
-            {{#each products}}
-            <li>product: {{product}}</li>
-
-            <ul>Quantity: {{quantity}}</ul>
+    <div>
+    {{#if carts}}
+        {{#if carts}}
+            <h2>Listado de productos agregados</h2>
+            {{#each carts}}
+                <p>{{quantity}}</p>
+                <p>{{product.title}}</p>
+                <p>Cantidad: {{quantity}}</p>
+                <p>{{_id}}</p>
+                <p>{{products}}</p>
+                
             {{/each}}
-    
-        
-        {{/each}}
+        {{else}}
+            No hay productos en el carrito
+        {{/if}}
+    {{else}}
+        <p>No hay detalles</p>
+    {{/if}}
     </div>
-  <p>probando each en carts</p>
+  {{!-- <p>probando each en carts</p> --}}
 </div>

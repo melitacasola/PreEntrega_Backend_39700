@@ -1,16 +1,24 @@
-<h1>Details Products:</h1>
-{{#each productId}}
-        <h2>{{this.title}}</h2>
-        <p>description: {{this.description}}</p>
-        <p>Price: {{this.price}}</p>
-        <p>Stock: {{this.stock}}</p>
-        <p>Category: {{this.category}}</p>
-        <p>thumbnails: {{this.thumbnails}}</p>
+<h1>Details Products::</h1>
+{{#if productId}}
+    {{#each productId}}
+    <h2>{{this.title}}</h2>
+    <p>{{description}}</p>
+    <br/>
+    <strong> {{category}}</strong>
+    
+    
+    <hr>
+    <p>{{price}}</p>
+    <p> {{stock}}</p>
+    {{!-- {{#if productId}} --}}
+    <button onclick="addToCart(``)">Agregar al carrito</button>
+   
+    {{!-- {{/if}} --}}
+    {{/each}}
 
-
-<div class="containerCard" id="containerCards"></div>
-<button id={{this._id}}>Agregar al Carrito</button>
-{{/each}}
+{{else}}
+    <p>No hay detalles</p>
+{{/if}}
 {{!-- <script defer src="/socket.io/socket.io.js"></script> --}}
 {{!-- <script defer src="/js/index.js"></script> --}}
 

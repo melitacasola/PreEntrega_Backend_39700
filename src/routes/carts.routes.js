@@ -51,13 +51,31 @@ cartsRouter.get('/:cid', async(req,res) =>{
     }
 })
 
-//agrega un producto al carrito
+//agrega un prod al carrito y suma de auna la cantidad
+cartsRouter.post("/:cid/products/:pid", async(req, res) =>{
+    const cartId = req.params.cid;
+    const prodId = req.params.pid;
+    
+    try {
+            const result = await cart.addProduct(cartId, prodId);
+            res.send(result);
+        }
+        catch (error) {
+            res.status(500).json({
+                error: -1,
+                description: error.message,
+                status: 500
+            });
+        }
+});
+
+//actualiza la cantidad de productos
 cartsRouter.put("/:cid/products/:pid", async(req, res) =>{
     const cartId = req.params.cid;
     const prodId = req.params.pid;
     const {quantity} = req.body
     try {
-            const result = await cart.addProduct(cartId, prodId, quantity);
+            const result = await cart.updateQuantityToProd(cartId, prodId, quantity);
             res.send(result);
         }
         catch (error) {
