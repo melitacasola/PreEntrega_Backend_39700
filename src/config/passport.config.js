@@ -21,9 +21,9 @@ export const initializePassport = ()=>{
                 }
                 //crear el usuario
                 let rol='usuario';
-                // if(username === 'adminCoder@coder.com' && password === 'adminCod3r123'){
-                //     rol = "admin";
-                // }
+                if(username === 'adminCoder@coder.com' && password === 'adminCod3r123'){
+                    rol = "admin";
+                }
                 //si no existe el usuario lo registramos
                 const newUser = {
                     name,
